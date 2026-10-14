@@ -1,0 +1,28 @@
+{
+  "name": "spectra-clothing",
+  "version": "1.0.0",
+  "description": "Spectra Clothing - custom print apparel studio",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "node scripts/smoke.test.mjs"
+  },
+  "dependencies": {
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0"
+  },
+  "devDependencies": {
+    "@fontsource/inter": "^5.3.0",
+    "@fontsource/space-grotesk": "^5.3.0",
+    "@vitejs/plugin-react": "^6.1.2",
+    "esbuild": "^0.28.2",
+    "linkedom": "^0.18.13",
+    "vite": "^8.3.4"
+  },
+  "allowScripts": {
+    "esbuild@0.28.2": true
+  }
+}
