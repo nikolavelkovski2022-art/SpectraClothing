@@ -1,6 +1,6 @@
 /**
  * Headless smoke test: mounts <App/> in a DOM shim and asserts the key
- * landing-page sections + customizer flow render correctly.
+ * landing-page sections + shop and quote interactions render correctly.
  * Run with: npm test   (uses linkedom for a browser-like DOM)
  */
 import { parseHTML } from 'linkedom'
@@ -67,22 +67,40 @@ createRoot(container).render(createElement(App))
 await new Promise((r) => setTimeout(r, 50))
 
 const checks = [
-  ['logo wordmark', /SPECTRA/],
-  ['hero headline', /Your idea/],
-  ['hero CTA', /Start your design/],
-  ['step 1 heading', /What are we printing on\?/],
-  ['step 2 heading', /How should we build your design\?/],
-  ['step 3 heading', /Place it on the/],
-  ['garment option', /T-Shirt/],
-  ['design option', /Upload a picture/],
-  ['text option', /G\.O\.A\.T\./],
-  ['size control', /Design size/],
-  ['side control', /Front/],
-  ['order button', /Send print request/],
-  ['how it works', /From an idea to a printed piece/],
-  ['reviews', /People wear their ideas/],
-  ['faq', /Good to know/],
-  ['footer', /Spectra Clothing\. All rights reserved\./],
+  ['brand wordmark', /SPECTRA/],
+  ['Macedonian hero headline', /ТВОЈАТА МАШИНА/],
+  ['Macedonian hero CTA', /Истражи ги налепниците/],
+  ['dual currency display', /ден\./],
+  ['painting service', /Фарбање мотори и коли/],
+  ['custom decals service', /Персонализирани декали/],
+  ['tuning brand product', /STAGE6/],
+  ['Malossi products', /MALOSSI/],
+  ['Polini products', /POLINI/],
+  ['2Fast products', /2FAST/],
+  ['RPG products', />RPG</],
+  ['Metrakit products', /METRAKIT/],
+  ['Doppler products', /DOPPLER/],
+  ['Motoforce products', /MOTOFORCE/],
+  ['product finish selector', /Холографска/],
+  ['category filters', /Перформанси.*Тркање.*Спектра/],
+  ['merch section', /СПЕКТРА ОБЛЕКА/],
+  ['custom premium t-shirt', /Премиум маица/],
+  ['custom hoodie', /Брендиран дуксер/],
+  ['custom crewneck', /Премиум блуза/],
+  ['merch colorways', /Мат црна.*Јаглеродна сива.*Кибер бела.*Неонски акцент/],
+  ['merch size range', /XXL/],
+  ['personalization preview input', /ТВОЈ ТЕКСТ \/ ПРЕКАР/],
+  ['print placement selector', /ПОЗИЦИЈА НА ПЕЧАТОТ/],
+  ['quote estimator', /КАЛКУЛАТОР ЗА ЦЕНА/],
+  ['quote service choice', /Персонализирани декали/],
+  ['email quote option', /ИСПРАТИ ГО БАРАЊЕТО ПО Е-ПОШТА/],
+  ['studio trust element', /ОД ИДЕЈА ДО ФИНАЛНА ИЗРАБОТКА/],
+  ['WhatsApp direct contact', /ПИШИ НИ ДИРЕКТНО/],
+  ['portfolio', /ИЗБРАНИ ПРОЕКТИ/],
+  ['contact form', /ТЕЛЕФОН \/ WHATSAPP/],
+  ['reference photo upload', /type="file"/],
+  ['Instagram contact', /SPECTRA\.KU/],
+  ['footer', /SPECTRACUSTOMS\. СОЗДАДЕНО ЗА ПАТ/],
 ]
 
 const html = container.innerHTML
@@ -93,16 +111,59 @@ for (const [name, pattern] of checks) {
   else console.log(`PASS  ${name}`)
 }
 
-// Structural assertions
-const svgCount = (html.match(/<svg/g) || []).length
-if (svgCount < 6) failed.push(`svg art present (found ${svgCount})`)
-else console.log(`PASS  svg art present (${svgCount} svgs)`)
+if (failed.length) {
+  console.error('\nFAILED:', failed.join(' | '))
+  process.exit(1)
+}
 
-if (!html.includes('garment-svg')) failed.push('live preview stage')
-else console.log('PASS  live preview stage')
+const languageButtons = container.querySelectorAll('.header-actions .locale-group:first-child button')
+const currencyButtons = container.querySelectorAll('.header-actions .currency-group button')
+languageButtons[2].click()
+await new Promise((r) => setTimeout(r, 30))
+if (document.documentElement.lang !== 'en' || !container.innerHTML.includes('DESERVES PERFECTION.')) {
+  failed.push('English switcher updates page language')
+} else console.log('PASS  English switcher updates page language')
+const englishContent = container.textContent.toLocaleUpperCase()
+if (!englishContent.includes('MOTORCYCLE & CAR PAINTING') || !englishContent.includes('PREMIUM HEAVYWEIGHT TEE') || !englishContent.includes('PRICE ESTIMATOR') || !englishContent.includes('PROJECT DETAILS')) {
+  failed.push('English translations cover services, merch, estimator and contact')
+} else console.log('PASS  English translations cover services, merch, estimator and contact')
 
-if (!html.includes('dropzone')) failed.push('upload dropzone')
-else console.log('PASS  upload dropzone')
+languageButtons[1].click()
+await new Promise((r) => setTimeout(r, 30))
+if (document.documentElement.lang !== 'sq' || !container.innerHTML.includes('MERITON PËRSOSMËRI.')) {
+  failed.push('Albanian switcher updates page language')
+} else console.log('PASS  Albanian switcher updates page language')
+const albanianContent = container.textContent.toLocaleUpperCase()
+if (!albanianContent.includes('LYERJE MOTOÇIKLETASH DHE MAKINASH') || !albanianContent.includes('LLOGARITËSI I ÇMIMIT') || !albanianContent.includes('DETAJET E PROJEKTIT')) {
+  failed.push('Albanian translations cover services, estimator and contact')
+} else console.log('PASS  Albanian translations cover services, estimator and contact')
+
+languageButtons[0].click()
+currencyButtons[1].click()
+await new Promise((r) => setTimeout(r, 30))
+const firstMerchPrice = container.querySelector('.merch-title-row strong')?.textContent ?? ''
+if (document.documentElement.lang !== 'mk' || !firstMerchPrice.includes('ден.') || !firstMerchPrice.startsWith('2')) {
+  failed.push('Macedonian and MKD display preference')
+} else console.log('PASS  Macedonian and MKD display preference')
+
+if (!container.querySelector('.mobile-menu-scrim') && container.querySelector('.drawer-links') && container.querySelector('.site-nav .locale-controls')) {
+  console.log('PASS  mobile drawer includes localized navigation and locale controls')
+} else failed.push('mobile drawer locale controls')
+
+container.querySelector('.merch-add')?.click()
+await new Promise((r) => setTimeout(r, 30))
+const cartItemBeforeLanguageChange = container.querySelector('.cart-item h3')?.textContent ?? ''
+languageButtons[2].click()
+await new Promise((r) => setTimeout(r, 30))
+const cartItemAfterLanguageChange = container.querySelector('.cart-item h3')?.textContent ?? ''
+if (cartItemBeforeLanguageChange !== 'Премиум маица' || cartItemAfterLanguageChange !== 'Premium heavyweight tee') {
+  failed.push('cart contents update with selected language')
+} else console.log('PASS  cart contents update with selected language')
+currencyButtons[0].click()
+await new Promise((r) => setTimeout(r, 30))
+if (!container.querySelector('.cart-total strong')?.textContent.startsWith('€')) {
+  failed.push('currency switch updates cart preferred price order')
+} else console.log('PASS  currency switch updates cart preferred price order')
 
 if (failed.length) {
   console.error('\nFAILED:', failed.join(' | '))
