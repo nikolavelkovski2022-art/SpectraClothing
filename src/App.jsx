@@ -1,14 +1,154 @@
 import { useEffect, useMemo, useState } from 'react'
+import { getSupabaseClient, isSupabaseConfigured } from './lib/supabase.js'
 
 const WHATSAPP_NUMBER = '38971942295'
 const languageNames = { mk: 'МК', sq: 'AL', en: 'EN' }
+const themes = [
+  { id: 'lilac', color: '#b9a5ff' },
+  { id: 'blue', color: '#8dbbff' },
+  { id: 'mint', color: '#8fe3c0' },
+  { id: 'cyan', color: '#00f0ff' },
+]
+const themeTranslations = {
+  mk: { theme: 'БОЈА НА ТЕМАТА', themeLilac: 'Лилакова', themeBlue: 'Светло сина', themeMint: 'Нане', themeCyan: 'Тиркизна' },
+  sq: { theme: 'NGJYRA E TEMËS', themeLilac: 'Lejla', themeBlue: 'Blu e çelët', themeMint: 'Nenexhik', themeCyan: 'Cian' },
+  en: { theme: 'THEME COLOR', themeLilac: 'Lilac', themeBlue: 'Soft blue', themeMint: 'Mint', themeCyan: 'Cyan' },
+}
+const communityTranslations = {
+  mk: {
+    communityEyebrow: '06 / ЗАЕДНИЦАТА НА SPECTRA',
+    communityTitle: 'НАШИТЕ ВОЗАЧИ.',
+    communityAccent: 'ВАШИТЕ МАШИНИ.',
+    communityIntro: 'Покажи го својот мотор или проект. Пријави се, испрати фотографија и неколку зборови — објавите ги проверуваме пред да се појават во галеријата.',
+    communityEmail: 'Е-ПОШТА',
+    communityPassword: 'ЛОЗИНКА',
+    communityLogin: 'НАЈАВИ СЕ',
+    communityCreateAccount: 'КРЕИРАЈ ПРОФИЛ',
+    communityNeedAccount: 'Немаш профил?',
+    communityHaveAccount: 'Веќе имаш профил?',
+    communityLogout: 'ОДЈАВИ СЕ',
+    communityLoginTitle: 'ПРИДРУЖИ СЕ НА ЕКИПАТА',
+    communityLoginIntro: 'Најави се или креирај профил за да го испратиш својот проект.',
+    communitySubmitTitle: 'СПОДЕЛИ ГО СВОЈОТ ПРОЕКТ',
+    communityDisplayName: 'ИМЕ ЗА ОБЈАВА',
+    communityDisplayPlaceholder: 'Како да те потпишеме?',
+    communityVehicle: 'МОТОР / ВОЗИЛО',
+    communityVehiclePlaceholder: 'Марка и модел, на пр. Aprilia SR 50',
+    communityStory: 'ПРИКАЗНА ЗА ПРОЕКТОТ',
+    communityStoryPlaceholder: 'Кажи ни нешто за моторот, измените или приказната зад него.',
+    communityInstagram: 'INSTAGRAM (НЕЗАДОЛЖИТЕЛНО)',
+    communityInstagramPlaceholder: '@твој.профил',
+    communityPhoto: 'ФОТОГРАФИЈА',
+    communityPhotoHelp: 'JPEG, PNG или WebP · до 8 MB',
+    communityConsent: 'Се согласувам фотографијата и овие податоци да бидат јавно прикажани ако Spectracustoms ја одобри објавата. Мојата е-пошта нема да биде прикажана.',
+    communitySubmit: 'ИСПРАТИ ЗА ОДОБРУВАЊЕ',
+    communityGalleryTitle: 'ОД НАШАТА ЕКИПА',
+    communityPendingTitle: 'ЧЕКААТ ОДОБРУВАЊЕ',
+    communityPending: 'ЧЕКА ОДОБРУВАЊЕ',
+    communityApprove: 'ОДОБРИ',
+    communityReject: 'ОДБИЈ',
+    communityEmpty: 'Галеријата допрва се полни. Биди меѓу првите што ќе го споделат својот мотор.',
+    communityLoading: 'СЕ ВЧИТУВА ГАЛЕРИЈАТА…',
+    communityNotConfigured: 'Галеријата и најавата сè уште не се поврзани. Администраторот треба да ги додаде Supabase податоците за поврзување.',
+    communityConfirmEmail: 'Провери ја е-поштата и потврди ја сметката пред да се најавиш.',
+    communitySubmissionSuccess: 'Фотографијата е испратена. Ќе се појави во галеријата откако ќе биде одобрена.',
+    communityPhotoError: 'Избери JPEG, PNG или WebP фотографија со големина до 8 MB.',
+    communityErrorPrefix: 'Не успеа:',
+    communitySubmitted: 'ИСПРАТЕНО',
+    communityYourSubmissions: 'ТВОИ ОБЈАВИ',
+  },
+  sq: {
+    communityEyebrow: '06 / KOMUNITETI SPECTRA',
+    communityTitle: 'RIDER-AT TANË.',
+    communityAccent: 'MOTORËT TUAJ.',
+    communityIntro: 'Trego motoçikletën ose projektin tënd. Regjistrohu, dërgo një fotografi dhe disa fjalë — çdo postim kontrollohet para se të shfaqet në galeri.',
+    communityEmail: 'EMAIL',
+    communityPassword: 'FJALËKALIMI',
+    communityLogin: 'HYR',
+    communityCreateAccount: 'KRIJO LLOGARI',
+    communityNeedAccount: 'Nuk ke llogari?',
+    communityHaveAccount: 'Ke tashmë llogari?',
+    communityLogout: 'DIL',
+    communityLoginTitle: 'BASHKOHU ME EKIPIN',
+    communityLoginIntro: 'Hyr ose krijo llogari për të dërguar projektin tënd.',
+    communitySubmitTitle: 'NDARJE E PROJEKTIT TËND',
+    communityDisplayName: 'EMRI PËR PUBLIKIM',
+    communityDisplayPlaceholder: 'Si të të shënojmë?',
+    communityVehicle: 'MOTOÇIKLETA / AUTOMJETI',
+    communityVehiclePlaceholder: 'Marka dhe modeli, p.sh. Aprilia SR 50',
+    communityStory: 'HISTORIA E PROJEKTIT',
+    communityStoryPlaceholder: 'Na trego për motoçikletën, modifikimet ose historinë e saj.',
+    communityInstagram: 'INSTAGRAM (OPSIONALE)',
+    communityInstagramPlaceholder: '@profili.yt',
+    communityPhoto: 'FOTOGRAFIA',
+    communityPhotoHelp: 'JPEG, PNG ose WebP · deri në 8 MB',
+    communityConsent: 'Pajtohem që fotografia dhe këto të dhëna të shfaqen publikisht nëse Spectracustoms e miraton postimin. Email-i im nuk do të shfaqet.',
+    communitySubmit: 'DËRGO PËR MIRATIM',
+    communityGalleryTitle: 'NGA KOMUNITETI YNË',
+    communityPendingTitle: 'NË PRITJE TË MIRATIMIT',
+    communityPending: 'NË PRITJE',
+    communityApprove: 'MIRATO',
+    communityReject: 'REFUZO',
+    communityEmpty: 'Galeria sapo ka filluar. Bëhu ndër të parët që ndan motoçikletën tënde.',
+    communityLoading: 'DUKE NGARKUAR GALERINË…',
+    communityNotConfigured: 'Galeria dhe hyrja ende nuk janë lidhur. Administratori duhet të shtojë të dhënat e lidhjes me Supabase.',
+    communityConfirmEmail: 'Kontrollo email-in dhe konfirmo llogarinë para se të hysh.',
+    communitySubmissionSuccess: 'Fotografia u dërgua. Do të shfaqet në galeri pasi të miratohet.',
+    communityPhotoError: 'Zgjidh një fotografi JPEG, PNG ose WebP deri në 8 MB.',
+    communityErrorPrefix: 'Dështoi:',
+    communitySubmitted: 'U DËRGUA',
+    communityYourSubmissions: 'POSTIMET E TUA',
+  },
+  en: {
+    communityEyebrow: '06 / THE SPECTRA COMMUNITY',
+    communityTitle: 'OUR RIDERS.',
+    communityAccent: 'YOUR BUILDS.',
+    communityIntro: 'Show off your bike or build. Sign up, send a photo and a few words — we review every post before it appears in the gallery.',
+    communityEmail: 'EMAIL',
+    communityPassword: 'PASSWORD',
+    communityLogin: 'SIGN IN',
+    communityCreateAccount: 'CREATE ACCOUNT',
+    communityNeedAccount: 'New here?',
+    communityHaveAccount: 'Already have an account?',
+    communityLogout: 'SIGN OUT',
+    communityLoginTitle: 'JOIN THE CREW',
+    communityLoginIntro: 'Sign in or create an account to send in your build.',
+    communitySubmitTitle: 'SHARE YOUR BUILD',
+    communityDisplayName: 'DISPLAY NAME',
+    communityDisplayPlaceholder: 'What should we call you?',
+    communityVehicle: 'BIKE / VEHICLE',
+    communityVehiclePlaceholder: 'Make and model, e.g. Aprilia SR 50',
+    communityStory: 'YOUR BUILD STORY',
+    communityStoryPlaceholder: 'Tell us about the bike, the mods or the story behind it.',
+    communityInstagram: 'INSTAGRAM (OPTIONAL)',
+    communityInstagramPlaceholder: '@your.handle',
+    communityPhoto: 'PHOTO',
+    communityPhotoHelp: 'JPEG, PNG or WebP · up to 8 MB',
+    communityConsent: 'I agree that this photo and these details may be shown publicly if Spectracustoms approves the post. My email will not be displayed.',
+    communitySubmit: 'SEND FOR APPROVAL',
+    communityGalleryTitle: 'FROM THE CREW',
+    communityPendingTitle: 'AWAITING APPROVAL',
+    communityPending: 'PENDING APPROVAL',
+    communityApprove: 'APPROVE',
+    communityReject: 'REJECT',
+    communityEmpty: 'The gallery is just getting started. Be one of the first to share your bike.',
+    communityLoading: 'LOADING THE GALLERY…',
+    communityNotConfigured: 'The gallery and sign-in are not connected yet. The site administrator needs to add the Supabase connection details.',
+    communityConfirmEmail: 'Check your email and confirm your account before signing in.',
+    communitySubmissionSuccess: 'Your photo is submitted. It will appear in the gallery once approved.',
+    communityPhotoError: 'Choose a JPEG, PNG or WebP photo up to 8 MB.',
+    communityErrorPrefix: 'Could not complete:',
+    communitySubmitted: 'SUBMITTED',
+    communityYourSubmissions: 'YOUR POSTS',
+  },
+}
 const imageUrl = (image, options) => image.startsWith('/images/')
   ? `${import.meta.env.BASE_URL}${image.slice(1)}`
   : `https://images.unsplash.com/${image}?${options}`
 const translations = {
   mk: {
     documentTitle: 'Spectracustoms — Фарбање, декали и облека по мерка', metaDescription: 'Spectracustoms — професионално фарбање мотори и автомобили, персонализирани декали и премиум облека. Цени во евра и денари.',
-    navHome: 'Почетна', navServices: 'Услуги', navShop: 'Налепници', navMerch: 'Облека', navWork: 'Проекти', navContact: 'Контакт', quoteCta: 'Побарај понуда', cart: 'Кошничка', menu: 'Отвори мени', closeMenu: 'Затвори мени', language: 'ЈАЗИК', currency: 'ВАЛУТА',
+    navHome: 'Почетна', navServices: 'Услуги', navShop: 'Налепници', navMerch: 'Облека', navWork: 'Проекти', navCommunity: 'Заедница', navContact: 'Контакт', quoteCta: 'Побарај понуда', cart: 'Кошничка', menu: 'Отвори мени', closeMenu: 'Затвори мени', language: 'ЈАЗИК', currency: 'ВАЛУТА',
     heroEyebrow: 'НЕЗАВИСНО КАСТОМ СТУДИО', heroTitle: 'ТВОЈАТА МАШИНА', heroTitleAccent: 'ЗАСЛУЖУВА СОВРШЕНСТВО.', heroDescription: 'Професионално фарбање на мотори и коли, врвни графички фолии и персонализирана облека за сите кои не се задоволуваат со просечност.', heroShop: 'Истражи ги налепниците', heroQuote: 'Побарај понуда', heroFact1: 'СОЗДАДЕНО ЗА ТВОЈОТ МОТОР', heroFact2: 'РАЧНА ИЗРАБОТКА. НИКАДЕ ПРОСЕЧНО.', heroCaption: 'ТВОЈОТ МОТОР. ТВОЈ СТИЛ.', scroll: 'ИСТРАЖИ',
     ticker1: 'РАЧНА ИЗРАБОТКА', ticker2: 'ПРОФЕСИОНАЛНО ФАРБАЊЕ', ticker3: 'ПРЕЦИЗНИ ДЕКАЛИ', ticker4: 'БЕЗ ПРОСЕЧНОСТ',
     servicesEyebrow: '01 / СТУДИОТО', servicesTitle: 'ДОБАР ВКУС.', servicesAccent: 'СВОИ ПРАВИЛА.', servicesIntro: 'Од промена на боја до целосен нов идентитет. Внимаваме на секој детаљ за твојата машина да биде незаборавна.', servicePaint: 'Фарбање мотори и коли', servicePaintDesc: 'Твојата визија, преточена во беспрекорна завршница.', paintTag1: 'Металик и еднобојно фарбање', paintTag2: 'Хамелеон / flip ефект', paintTag3: 'Аерографија и поправка', serviceDecals: 'Персонализирани декали', serviceDecalsDesc: 'Графика што прецизно одговара на твојата машина.', decalTag1: 'Векторски дизајн по мерка', decalTag2: 'Комплети за цела каросерија', decalTag3: 'Прецизни фолии и ливреи', serviceApparel: 'Персонализирана облека', serviceApparelDesc: 'Тешки материјали. Чист дизајн. Твој личен печат.', apparelTag1: 'Маици, дуксери и блузи', apparelTag2: 'Печатење по мерка', apparelTag3: 'Мали серии и уникати', startProject: 'СОЗДАЈ ГО ТВОЈОТ ПРОЕКТ',
@@ -18,7 +158,7 @@ const translations = {
     merchEyebrow: '03 / СПЕКТРА КОЛЕКЦИЈА', merchTitle: 'СПЕКТРА ОБЛЕКА', merchAccent: 'И ОПРЕМА.', merchDescription: 'За часовите пред возење и приказните потоа. Тешки материјали, чист дизајн, без компромиси.', studioUniform: 'СТУДИСКА УНИФОРМА / ТОМ 01', madeToOrder: '3 МОДЕЛИ · ПЕРСОНАЛИЗИРАНИ ПО НАРАЧКА', merchTee: 'Премиум маица', teeDesc: 'Тешка памучна маица · 280 g/m²', teeCategory: 'МАИЦА / 280 G/M²', merchHoodie: 'Брендиран дуксер', hoodieDesc: 'Топол дуксер со капуљача и кенгур џеб', hoodieCategory: 'ДУКСЕР / 480 G/M²', merchCrew: 'Премиум блуза', crewDesc: 'Минималистичка блуза без капуљача', crewCategory: 'БЛУЗА / 420 G/M²', personalize: 'ТВОЈ ТЕКСТ / ПРЕКАР', textPlaceholder: 'SPECTRA', placement: 'ПОЗИЦИЈА НА ПЕЧАТОТ', chest: 'Предно лого на градите', backPrint: 'Голем принт на грбот', sleeve: 'Детал на ракавот', color: 'БОЈА', matteBlack: 'Мат црна', carbonGrey: 'Јаглеродна сива', cyberWhite: 'Кибер бела', neon: 'Неонски акцент', addQuick: 'ДОДАЈ ВО КОШНИЧКА', merchEnd1: 'НАПРАВЕНО ЗА СЕКОЈДНЕВНО НОСЕЊЕ.', merchEnd2: 'ПЕРСОНАЛИЗИРАЈ ЈА. НАПРАВИ ЈА СВОЈА.',
     quoteEyebrow: '04 / ЗАПОЧНИ СО ПРОЕКТОТ', quoteTitle: 'АЈДЕ ДА ЈА', quoteAccent: 'СРЕДИМЕ.', quoteDescription: 'Избери услуга, возило и финиш. Добиј брза проценка во евра и денари пред да почнеме.', estimateNote: 'ПРОЦЕНКАТА Е ОРИЕНТАЦИСКА. КОНЕЧНАТА ЦЕНА ЈА ПОТВРДУВАМЕ ПРЕД ПОЧЕТОК.', calculator: 'КАЛКУЛАТОР ЗА ЦЕНА', service: 'УСЛУГА', vehicle: 'МОТОР / ВОЗИЛО', material: 'ФИНИШ / МАТЕРИЈАЛ', paint: 'Фарбање', decals: 'Персонализирани декали', motorcycle: 'Мотор', car: 'Автомобил', standardPaint: 'Стандардна боја', metallic: 'Металик', chameleon: 'Хамелеон', standardVinyl: 'Стандардна фолија', reflectiveVinyl: 'Рефлектирачка фолија', customGraphics: 'Прилагодена графика', estimatedRange: 'ПРОЦЕНЕТ ОПСЕГ', finalPriceNote: 'Конечната цена зависи од деталите на проектот.', requestWhatsApp: 'ПОБАРАЈ ПОНУДА ПРЕКУ WHATSAPP', requestEmail: 'ИЛИ ИСПРАТИ ГО БАРАЊЕТО ПО Е-ПОШТА', estimateSubject: 'Барање понуда — Spectracustoms', estimateMessage: 'Здраво Spectracustoms! Би сакал/а понуда за', for: 'на', withFinish: 'со финиш', estimateIs: 'Проценет опсег:',
     workEyebrow: '05 / ИЗБРАНИ ПРОЕКТИ', workTitle: 'ИЗРАБОТЕНО ТУКА.', workAccent: 'ПРЕПОЗНАТЛИВО СЕКАДЕ.', allWork: 'Сите проекти', paintJobs: 'Фарбање', decalJobs: 'Декали', apparelJobs: 'Облека', paintGallery: 'Целосно фарбање по мерка', decalGallery: 'Персонализирана ливреја', apparelGallery: 'Студиска колекција', galleryTitle: 'Изработено различно', galleryCarTitle: 'Spectra Rally / Corsa', galleryFairingsTitle: 'Тркачки сет / Aprilia', galleryStickerTitle: 'Декали по нарачка', galleryScooterTitle: 'Custom скутер / проект',
-    contactEyebrow: '06 / ТВОЈ РЕД', contactTitle: 'ИМАШ ИДЕЈА', contactAccent: 'ЗА ПРОЕКТ?', contactDescription: 'Испрати ни ја идејата, фотографијата или скицата. Ние ќе се погрижиме за останатото.', whatsappUs: 'ПИШИ НИ НА WHATSAPP', yourName: 'ТВОЕТО ИМЕ', namePlaceholder: 'Име и презиме', phone: 'ТЕЛЕФОН / WHATSAPP', phonePlaceholder: '+389 ...', projectType: 'ЗА ШТО СЕ РАБОТИ?', projectMotor: 'Мотор / скутер', projectCar: 'Автомобил', projectDecals: 'Персонализирани декали', projectApparel: 'Маица / дуксер / блуза', projectOther: 'Друг проект', details: 'ДЕТАЛИ ЗА ПРОЕКТОТ', detailsPlaceholder: 'Опиши ни ја идејата. Колку повеќе детали, толку подобро.', referencePhoto: 'РЕФЕРЕНТНА ФОТОГРАФИЈА (НЕЗАДОЛЖИТЕЛНО)', attach: 'Додај фотографија или скица', submitProject: 'ИСПРАТИ ГО ПРОЕКТОТ', openWhatsApp: 'ОТВОРИ WHATSAPP ЗА ИСПРАЌАЊЕ', privacy: 'ТВОИТЕ ПОДАТОЦИ ОСТАНУВААТ КАЈ НАШЕТО СТУДИО.',
+    contactEyebrow: '07 / ТВОЈ РЕД', contactTitle: 'ИМАШ ИДЕЈА', contactAccent: 'ЗА ПРОЕКТ?', contactDescription: 'Испрати ни ја идејата, фотографијата или скицата. Ние ќе се погрижиме за останатото.', whatsappUs: 'ПИШИ НИ НА WHATSAPP', yourName: 'ТВОЕТО ИМЕ', namePlaceholder: 'Име и презиме', phone: 'ТЕЛЕФОН / WHATSAPP', phonePlaceholder: '+389 ...', projectType: 'ЗА ШТО СЕ РАБОТИ?', projectMotor: 'Мотор / скутер', projectCar: 'Автомобил', projectDecals: 'Персонализирани декали', projectApparel: 'Маица / дуксер / блуза', projectOther: 'Друг проект', details: 'ДЕТАЛИ ЗА ПРОЕКТОТ', detailsPlaceholder: 'Опиши ни ја идејата. Колку повеќе детали, толку подобро.', referencePhoto: 'РЕФЕРЕНТНА ФОТОГРАФИЈА (НЕЗАДОЛЖИТЕЛНО)', attach: 'Додај фотографија или скица', submitProject: 'ИСПРАТИ ГО ПРОЕКТОТ', openWhatsApp: 'ОТВОРИ WHATSAPP ЗА ИСПРАЌАЊЕ', privacy: 'ТВОИТЕ ПОДАТОЦИ ОСТАНУВААТ КАЈ НАШЕТО СТУДИО.',
     footerText: 'Независно кастом студио.', footerSub: 'За машини со свој карактер.', backTop: 'НАЗАД НА ВРВ', footerMotto: 'СОЗДАДЕНО ЗА ПАТ.', footerServices: 'ФАРБАЊЕ / ДЕКАЛИ / ОБЛЕКА',
     footerContactTitle: 'КОНТАКТ / ЛОКАЦИЈА', footerPhone: 'ЈАВИ СЕ', footerLocation: 'ЛОКАЦИЈА', footerCity: 'Куманово, Северна Македонија', footerMapTitle: 'Zenix Zperformance — Google Maps', footerMapLink: 'ОТВОРИ ВО GOOGLE MAPS',
     yourSelection: 'ТВОЈ ИЗБОР', cartTitle: 'КОШНИЧКА', closeCart: 'Затвори кошничка', emptyCart: 'Кошничката е празна.', findStickers: 'ИЗБЕРИ НАЛЕПНИЦИ', customMark: 'ТЕКСТ:', total: 'ВКУПНО', shipping: 'Испораката се пресметува дополнително.', orderWhatsApp: 'НАРАЧАЈ ПРЕКУ WHATSAPP', orderMessage: 'Здраво Spectracustoms! Сакам да нарачам:', colorway: 'БОЈА', printPlacement: 'позиција:', orderText: 'текст:', subtotal: 'Вкупно:',
@@ -26,7 +166,7 @@ const translations = {
   },
   sq: {
     documentTitle: 'Spectracustoms — Lyerje, ngjitëse dhe veshje me porosi', metaDescription: 'Spectracustoms — lyerje profesionale për motoçikleta dhe makina, ngjitëse të personalizuara dhe veshje premium. Çmime në euro dhe denarë.',
-    navHome: 'Kryefaqja', navServices: 'Shërbimet', navShop: 'Ngjitëse', navMerch: 'Veshje', navWork: 'Projektet', navContact: 'Kontakt', quoteCta: 'Kërko ofertë', cart: 'Shporta', menu: 'Hap menynë', closeMenu: 'Mbyll menynë', language: 'GJUHA', currency: 'MONEDHA',
+    navHome: 'Kryefaqja', navServices: 'Shërbimet', navShop: 'Ngjitëse', navMerch: 'Veshje', navWork: 'Projektet', navCommunity: 'Komuniteti', navContact: 'Kontakt', quoteCta: 'Kërko ofertë', cart: 'Shporta', menu: 'Hap menynë', closeMenu: 'Mbyll menynë', language: 'GJUHA', currency: 'MONEDHA',
     heroEyebrow: 'STUDIO E PAVARUR CUSTOM', heroTitle: 'MAKINA JOTE', heroTitleAccent: 'MERITON PËRSOSMËRI.', heroDescription: 'Lyerje profesionale për motoçikleta dhe makina, folje grafike cilësore dhe veshje të personalizuara për ata që nuk kënaqen me mesataren.', heroShop: 'Shiko ngjitëset', heroQuote: 'Kërko ofertë', heroFact1: 'KRIJUAR PËR MOTIN TËND', heroFact2: 'PUNUAR ME DORË. ASNJËHERË MESATARE.', heroCaption: 'MOTI YT. STILI YT.', scroll: 'EKSPLORO',
     ticker1: 'PUNUAR ME DORË', ticker2: 'LYERJE PROFESIONALE', ticker3: 'DETAJE TË SAKTA', ticker4: 'ASNJËHERË MESATARE',
     servicesEyebrow: '01 / STUDIOJA', servicesTitle: 'SHIJE E MIRË.', servicesAccent: 'RREGULLAT TONA.', servicesIntro: 'Nga ndryshimi i ngjyrës te një identitet i ri. Kujdesemi për çdo detaj që makina jote të mos harrohet.', servicePaint: 'Lyerje motoçikletash dhe makinash', servicePaintDesc: 'Vizioni yt, i kthyer në një përfundim të përsosur.', paintTag1: 'Ngjyra metalike dhe uniforme', paintTag2: 'Efekt kameleon / flip', paintTag3: 'Airbrush dhe riparim', serviceDecals: 'Ngjitëse të personalizuara', serviceDecalsDesc: 'Grafikë që përshtatet saktësisht me makinën tënde.', decalTag1: 'Dizajn vektorial sipas porosisë', decalTag2: 'Komplete për të gjithë karrocerinë', decalTag3: 'Folje dhe livery precize', serviceApparel: 'Veshje të personalizuara', serviceApparelDesc: 'Materiale të rënda. Dizajn i pastër. Shenja jote.', apparelTag1: 'Bluza, kapuça dhe sweatshirt', apparelTag2: 'Printim sipas porosisë', apparelTag3: 'Seri të vogla dhe unike', startProject: 'KRIJO PROJEKTIN TËND',
@@ -36,7 +176,7 @@ const translations = {
     merchEyebrow: '03 / KOLEKSIONI SPECTRA', merchTitle: 'VESHJE SPECTRA', merchAccent: 'DHE PAJISJE.', merchDescription: 'Për orët para vozitjes dhe tregimet pas saj. Materiale të rënda, dizajn i pastër, pa kompromise.', studioUniform: 'UNIFORMA E STUDIOS / VOL. 01', madeToOrder: '3 MODELE · PERSONALIZOHEN SIPAS POROSISË', merchTee: 'T-shirt premium', teeDesc: 'T-shirt pambuku i rëndë · 280 g/m²', teeCategory: 'T-SHIRT / 280 G/M²', merchHoodie: 'Hoodie i brenduar', hoodieDesc: 'Hoodie i ngrohtë me kapuç dhe xhep kangur', hoodieCategory: 'HOODIE / 480 G/M²', merchCrew: 'Sweatshirt premium', crewDesc: 'Sweatshirt minimalist pa kapuç', crewCategory: 'SWEATSHIRT / 420 G/M²', personalize: 'TEKSTI YT / Nofka', textPlaceholder: 'SPECTRA', placement: 'POZICIONI I PRINTIMIT', chest: 'Logo përpara në gjoks', backPrint: 'Print i madh në shpinë', sleeve: 'Detaj në mëngë', color: 'NGJYRA', matteBlack: 'E zezë mat', carbonGrey: 'Gri karboni', cyberWhite: 'E bardhë cyber', neon: 'Theks neoni', addQuick: 'SHTO NË SHPORTË', merchEnd1: 'KRIJUAR PËR PËRDORIM TË PËRDITSHËM.', merchEnd2: 'PERSONALIZOJE. BËJE TËNDEN.',
     quoteEyebrow: '04 / NIS PROJEKTIN', quoteTitle: 'LE TA', quoteAccent: 'RREGULLOJMË.', quoteDescription: 'Zgjidh shërbimin, automjetin dhe përfundimin. Merr një vlerësim të shpejtë në euro dhe denarë.', estimateNote: 'VLERËSIMI ËSHTË ORIENTUES. ÇMIMI FINAL KONFIRMOHET PARA FILLIMIT.', calculator: 'LLOGARITËSI I ÇMIMIT', service: 'SHËRBIMI', vehicle: 'MOTO / AUTOMJETI', material: 'PËRFUNDIMI / MATERIALI', paint: 'Lyerje', decals: 'Ngjitëse të personalizuara', motorcycle: 'Motoçikletë', car: 'Makinë', standardPaint: 'Ngjyrë standarde', metallic: 'Metalike', chameleon: 'Kameleon', standardVinyl: 'Folje standarde', reflectiveVinyl: 'Folje reflektuese', customGraphics: 'Grafikë e personalizuar', estimatedRange: 'VLERA E PËRAFËRT', finalPriceNote: 'Çmimi final varet nga detajet e projektit.', requestWhatsApp: 'KËRKO OFERTË NË WHATSAPP', requestEmail: 'OSE DËRGO KËRKESËN ME EMAIL', estimateSubject: 'Kërkesë për ofertë — Spectracustoms', estimateMessage: 'Përshëndetje Spectracustoms! Do të doja ofertë për', for: 'për', withFinish: 'me përfundim', estimateIs: 'Vlera e përafërt:',
     workEyebrow: '05 / PROJEKTET E ZGJEDHURA', workTitle: 'KRIJUAR KËTU.', workAccent: 'NJIhet KUDO.', allWork: 'Të gjitha', paintJobs: 'Lyerje', decalJobs: 'Ngjitëse', apparelJobs: 'Veshje', paintGallery: 'Lyerje e plotë me porosi', decalGallery: 'Livery e personalizuar', apparelGallery: 'Koleksioni i studios', galleryTitle: 'Ndryshe nga të tjerët', galleryCarTitle: 'Spectra Rally / Corsa', galleryFairingsTitle: 'Set garash / Aprilia', galleryStickerTitle: 'Ngjitëse me porosi', galleryScooterTitle: 'Skuter / projekt custom',
-    contactEyebrow: '06 / RADHA JOTE', contactTitle: 'KE NJË IDE', contactAccent: 'PËR PROJEKT?', contactDescription: 'Na dërgo idenë, fotografinë ose skicën. Ne kujdesemi për pjesën tjetër.', whatsappUs: 'NA SHKRUAJ NË WHATSAPP', yourName: 'EMRI YT', namePlaceholder: 'Emri dhe mbiemri', phone: 'TELEFON / WHATSAPP', phonePlaceholder: '+389 ...', projectType: 'PËR ÇFARË BËHET FJALË?', projectMotor: 'Motoçikletë / skuter', projectCar: 'Makinë', projectDecals: 'Ngjitëse të personalizuara', projectApparel: 'T-shirt / hoodie / sweatshirt', projectOther: 'Projekt tjetër', details: 'DETAJET E PROJEKTIT', detailsPlaceholder: 'Na trego idenë. Sa më shumë detaje, aq më mirë.', referencePhoto: 'FOTOGRAFI REFERUESE (OPSIONALE)', attach: 'Shto fotografi ose skicë', submitProject: 'DËRGO PROJEKTIN', openWhatsApp: 'HAP WHATSAPP PËR TA DËRGUAR', privacy: 'TË DHËNAT TUAJA MBETEN NË STUDION TONË.',
+    contactEyebrow: '07 / RADHA JOTE', contactTitle: 'KE NJË IDE', contactAccent: 'PËR PROJEKT?', contactDescription: 'Na dërgo idenë, fotografinë ose skicën. Ne kujdesemi për pjesën tjetër.', whatsappUs: 'NA SHKRUAJ NË WHATSAPP', yourName: 'EMRI YT', namePlaceholder: 'Emri dhe mbiemri', phone: 'TELEFON / WHATSAPP', phonePlaceholder: '+389 ...', projectType: 'PËR ÇFARË BËHET FJALË?', projectMotor: 'Motoçikletë / skuter', projectCar: 'Makinë', projectDecals: 'Ngjitëse të personalizuara', projectApparel: 'T-shirt / hoodie / sweatshirt', projectOther: 'Projekt tjetër', details: 'DETAJET E PROJEKTIT', detailsPlaceholder: 'Na trego idenë. Sa më shumë detaje, aq më mirë.', referencePhoto: 'FOTOGRAFI REFERUESE (OPSIONALE)', attach: 'Shto fotografi ose skicë', submitProject: 'DËRGO PROJEKTIN', openWhatsApp: 'HAP WHATSAPP PËR TA DËRGUAR', privacy: 'TË DHËNAT TUAJA MBETEN NË STUDION TONË.',
     footerText: 'Studio e pavarur custom.', footerSub: 'Për makina me karakter.', backTop: 'KTHEHU LART ↑', footerMotto: 'KRIJUAR PËR RRUGË.', footerServices: 'LYERJE / NGJITËSE / VESHJE',
     footerContactTitle: 'KONTAKT / VENDNDODHJA', footerPhone: 'NA TELEFONO', footerLocation: 'VENDNDODHJA', footerCity: 'Kumanovë, Maqedonia e Veriut', footerMapTitle: 'Zenix Zperformance — Google Maps', footerMapLink: 'HAP NË GOOGLE MAPS',
     yourSelection: 'ZGJEDHJA JOTE', cartTitle: 'SHPORTA', closeCart: 'Mbyll shportën', emptyCart: 'Shporta është bosh.', findStickers: 'ZGJIDH NGJITËSE ↗', customMark: 'TEKSTI:', total: 'TOTALI', shipping: 'Transporti llogaritet veçmas.', orderWhatsApp: 'POROSIT NË WHATSAPP', orderMessage: 'Përshëndetje Spectracustoms! Dua të porosis:', colorway: 'NGJYRA', printPlacement: 'pozicioni:', orderText: 'teksti:', subtotal: 'Totali:',
@@ -44,7 +184,7 @@ const translations = {
   },
   en: {
     documentTitle: 'Spectracustoms — Custom Paint, Decals & Apparel', metaDescription: 'Spectracustoms — professional motorcycle and car painting, custom decals and premium apparel. Prices in euros and denars.',
-    navHome: 'Home', navServices: 'Services', navShop: 'Stickers', navMerch: 'Apparel', navWork: 'Work', navContact: 'Contact', quoteCta: 'Get a quote', cart: 'Cart', menu: 'Open menu', closeMenu: 'Close menu', language: 'LANGUAGE', currency: 'CURRENCY',
+    navHome: 'Home', navServices: 'Services', navShop: 'Stickers', navMerch: 'Apparel', navWork: 'Work', navCommunity: 'Riders', navContact: 'Contact', quoteCta: 'Get a quote', cart: 'Cart', menu: 'Open menu', closeMenu: 'Close menu', language: 'LANGUAGE', currency: 'CURRENCY',
     heroEyebrow: 'INDEPENDENT CUSTOM STUDIO', heroTitle: 'YOUR MACHINE', heroTitleAccent: 'DESERVES PERFECTION.', heroDescription: 'Professional motorcycle and car paint, premium graphic decals, and custom apparel for people who refuse to settle for average.', heroShop: 'Explore sticker shop', heroQuote: 'Get a quote', heroFact1: 'BUILT FOR YOUR RIDE', heroFact2: 'MADE BY HAND. NEVER ORDINARY.', heroCaption: 'YOUR MACHINE. YOUR SIGNATURE.', scroll: 'EXPLORE',
     ticker1: 'MADE BY HAND', ticker2: 'PROFESSIONAL PAINT', ticker3: 'PRECISION DECALS', ticker4: 'NEVER ORDINARY',
     servicesEyebrow: '01 / THE STUDIO', servicesTitle: 'GOOD TASTE.', servicesAccent: 'OWN THE RULES.', servicesIntro: 'From a colour change to a complete new identity. Every detail matters when your machine needs to be unforgettable.', servicePaint: 'Motorcycle & car painting', servicePaintDesc: 'Your vision, finished to an uncompromising standard.', paintTag1: 'Metallic and solid paint', paintTag2: 'Chameleon / flip finish', paintTag3: 'Airbrush and fairing repair', serviceDecals: 'Custom decals & livery', serviceDecalsDesc: 'Graphics precision-fitted to your machine.', decalTag1: 'Custom vector design', decalTag2: 'Full body kits', decalTag3: 'Precision vinyl and livery', serviceApparel: 'Custom apparel', serviceApparelDesc: 'Heavy fabrics. Clean design. Your own signature.', apparelTag1: 'T-shirts, hoodies and crewnecks', apparelTag2: 'Made-to-order printing', apparelTag3: 'Small runs and one-offs', startProject: 'BUILD YOUR PROJECT',
@@ -54,7 +194,7 @@ const translations = {
     merchEyebrow: '03 / SPECTRA COLLECTION', merchTitle: 'SPECTRA APPAREL', merchAccent: '& GEAR.', merchDescription: 'For the hours before the ride and the stories after. Heavy fabrics, clean design, zero compromise.', studioUniform: 'STUDIO UNIFORM / VOL. 01', madeToOrder: '3 STYLES · PERSONALIZED TO ORDER', merchTee: 'Premium heavyweight tee', teeDesc: 'Heavyweight cotton tee · 280 g/m²', teeCategory: 'TEE / 280 G/M²', merchHoodie: 'Custom hooded sweatshirt', hoodieDesc: 'Warm hooded sweatshirt with kangaroo pocket', hoodieCategory: 'HOODIE / 480 G/M²', merchCrew: 'Premium crewneck sweatshirt', crewDesc: 'Minimal crewneck, no hood', crewCategory: 'CREWNECK / 420 G/M²', personalize: 'YOUR TEXT / NICKNAME', textPlaceholder: 'SPECTRA', placement: 'PRINT PLACEMENT', chest: 'Front chest logo', backPrint: 'Large back print', sleeve: 'Sleeve detail', color: 'COLORWAY', matteBlack: 'Matte Black', carbonGrey: 'Carbon Grey', cyberWhite: 'Cyber White', neon: 'Neon Accent', addQuick: 'ADD TO CART', merchEnd1: 'ENGINEERED FOR EVERYDAY WEAR.', merchEnd2: 'PERSONALIZE IT. MAKE IT YOURS.',
     quoteEyebrow: '04 / START YOUR BUILD', quoteTitle: 'LET’S MAKE', quoteAccent: 'IT YOURS.', quoteDescription: 'Choose a service, vehicle and finish. Get a quick estimate in euros and denars before we start.', estimateNote: 'ESTIMATE IS INDICATIVE. FINAL PRICE IS CONFIRMED BEFORE WORK BEGINS.', calculator: 'PRICE ESTIMATOR', service: 'SERVICE', vehicle: 'MOTORCYCLE / VEHICLE', material: 'FINISH / MATERIAL', paint: 'Painting', decals: 'Custom decals', motorcycle: 'Motorcycle', car: 'Car', standardPaint: 'Standard paint', metallic: 'Metallic', chameleon: 'Chameleon', standardVinyl: 'Standard vinyl', reflectiveVinyl: 'Reflective vinyl', customGraphics: 'Custom graphics', estimatedRange: 'ESTIMATED RANGE', finalPriceNote: 'Final price depends on project details.', requestWhatsApp: 'REQUEST A WHATSAPP QUOTE', requestEmail: 'OR SEND YOUR REQUEST BY EMAIL', estimateSubject: 'Custom quote — Spectracustoms', estimateMessage: 'Hi Spectracustoms! I’d like a quote for', for: 'for', withFinish: 'with', estimateIs: 'Estimated range:',
     workEyebrow: '05 / SELECTED PROJECTS', workTitle: 'BUILT RIGHT HERE.', workAccent: 'RECOGNIZED EVERYWHERE.', allWork: 'All projects', paintJobs: 'Painting', decalJobs: 'Decals', apparelJobs: 'Apparel', paintGallery: 'Full custom paint', decalGallery: 'Custom livery', apparelGallery: 'Studio collection', galleryTitle: 'Built different', galleryCarTitle: 'Spectra Rally / Corsa', galleryFairingsTitle: 'Race kit / Aprilia', galleryStickerTitle: 'Custom decals', galleryScooterTitle: 'Custom scooter / build',
-    contactEyebrow: '06 / YOUR MOVE', contactTitle: 'HAVE AN IDEA', contactAccent: 'FOR A BUILD?', contactDescription: 'Send the idea, photo or sketch. We’ll take it from there.', whatsappUs: 'MESSAGE US ON WHATSAPP', yourName: 'YOUR NAME', namePlaceholder: 'First and last name', phone: 'PHONE / WHATSAPP', phonePlaceholder: '+389 ...', projectType: 'WHAT ARE WE WORKING ON?', projectMotor: 'Motorcycle / scooter', projectCar: 'Car', projectDecals: 'Custom decals', projectApparel: 'T-shirt / hoodie / crewneck', projectOther: 'Other project', details: 'PROJECT DETAILS', detailsPlaceholder: 'Tell us what you have in mind. More detail helps.', referencePhoto: 'REFERENCE IMAGE (OPTIONAL)', attach: 'Attach a photo or sketch', submitProject: 'SEND YOUR PROJECT', openWhatsApp: 'OPEN WHATSAPP TO SEND', privacy: 'YOUR DETAILS STAY WITH OUR STUDIO.',
+    contactEyebrow: '07 / YOUR MOVE', contactTitle: 'HAVE AN IDEA', contactAccent: 'FOR A BUILD?', contactDescription: 'Send the idea, photo or sketch. We’ll take it from there.', whatsappUs: 'MESSAGE US ON WHATSAPP', yourName: 'YOUR NAME', namePlaceholder: 'First and last name', phone: 'PHONE / WHATSAPP', phonePlaceholder: '+389 ...', projectType: 'WHAT ARE WE WORKING ON?', projectMotor: 'Motorcycle / scooter', projectCar: 'Car', projectDecals: 'Custom decals', projectApparel: 'T-shirt / hoodie / crewneck', projectOther: 'Other project', details: 'PROJECT DETAILS', detailsPlaceholder: 'Tell us what you have in mind. More detail helps.', referencePhoto: 'REFERENCE IMAGE (OPTIONAL)', attach: 'Attach a photo or sketch', submitProject: 'SEND YOUR PROJECT', openWhatsApp: 'OPEN WHATSAPP TO SEND', privacy: 'YOUR DETAILS STAY WITH OUR STUDIO.',
     footerText: 'Independent custom studio.', footerSub: 'For machines with character.', backTop: 'BACK TO TOP ↑', footerMotto: 'BUILT FOR THE ROAD.', footerServices: 'PAINT / DECALS / APPAREL',
     footerContactTitle: 'CONTACT / LOCATION', footerPhone: 'CALL US', footerLocation: 'LOCATION', footerCity: 'Kumanovo, North Macedonia', footerMapTitle: 'Zenix Zperformance — Google Maps', footerMapLink: 'OPEN IN GOOGLE MAPS',
     yourSelection: 'YOUR SELECTION', cartTitle: 'YOUR CART', closeCart: 'Close cart', emptyCart: 'Your cart is empty.', findStickers: 'EXPLORE DECALS ↗', customMark: 'TEXT:', total: 'TOTAL', shipping: 'Shipping is calculated separately.', orderWhatsApp: 'ORDER VIA WHATSAPP', orderMessage: 'Hi Spectracustoms! I’d like to order:', colorway: 'COLOR', printPlacement: 'placement:', orderText: 'text:', subtotal: 'Total:',
@@ -313,6 +453,16 @@ function Brand() {
   return <a className="brand" href="#top" aria-label="Spectracustoms"><span className="brand-mark">S<span>.</span></span><span className="brand-type">SPECTRA<span>CUSTOMS</span></span><span className="brand-separator" /></a>
 }
 
+function ThemeControls({ lang, theme, onTheme, t, compact = false }) {
+  return <div className={`theme-controls ${compact ? 'theme-compact' : ''}`} role="group" aria-label={t('theme')}>
+    <span className="theme-label">{t('theme')}</span>
+    {themes.map(({ id, color }) => {
+      const label = t(`theme${id[0].toUpperCase()}${id.slice(1)}`)
+      return <button type="button" key={id} title={label} aria-label={label} aria-pressed={theme === id} className={theme === id ? 'active' : ''} onClick={() => onTheme(id)}><span style={{ '--theme-swatch': color }} /></button>
+    })}
+  </div>
+}
+
 function LocaleControls({ lang, currency, onLanguage, onCurrency, t, compact = false }) {
   const nativeLanguageNames = { mk: 'Македонски', sq: 'Shqip', en: 'English' }
   return <div className={`locale-controls ${compact ? 'locale-compact' : ''}`}>
@@ -321,10 +471,10 @@ function LocaleControls({ lang, currency, onLanguage, onCurrency, t, compact = f
   </div>
 }
 
-function Header({ cartCount, onCart, lang, currency, onLanguage, onCurrency, t }) {
+function Header({ cartCount, onCart, lang, currency, theme, onLanguage, onCurrency, onTheme, t }) {
   const [menuOpen, setMenuOpen] = useState(false)
   const closeMenu = () => setMenuOpen(false)
-  const links = [['#top', 'navHome'], ['#services', 'navServices'], ['#shop', 'navShop'], ['#merch', 'navMerch'], ['#work', 'navWork'], ['#contact', 'navContact']]
+  const links = [['#top', 'navHome'], ['#services', 'navServices'], ['#shop', 'navShop'], ['#merch', 'navMerch'], ['#work', 'navWork'], ['#community', 'navCommunity'], ['#contact', 'navContact']]
   return <header className="site-header">
     <Brand />
     <button className="menu-toggle" type="button" aria-label={menuOpen ? t('closeMenu') : t('menu')} aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}><span /><span /></button>
@@ -333,10 +483,11 @@ function Header({ cartCount, onCart, lang, currency, onLanguage, onCurrency, t }
       <div className="mobile-drawer-head"><Brand /><button type="button" className="drawer-close" aria-label={t('closeMenu')} onClick={closeMenu}>×</button></div>
       <div className="drawer-links">{links.map(([href, key]) => <a href={href} key={href} onClick={closeMenu}>{t(key)}</a>)}</div>
       <LocaleControls lang={lang} currency={currency} onLanguage={onLanguage} onCurrency={onCurrency} t={t} compact />
+      <ThemeControls lang={lang} theme={theme} onTheme={onTheme} t={t} compact />
       <button className="drawer-cart" type="button" onClick={() => { closeMenu(); onCart() }}><span>{t('cart')}</span><b>{cartCount}</b><span>↗</span></button>
       <a className="drawer-quote" href="#quote" onClick={closeMenu}>{t('quoteCta')} <span>↗</span></a>
     </nav>
-    <div className="header-actions"><LocaleControls lang={lang} currency={currency} onLanguage={onLanguage} onCurrency={onCurrency} t={t} /><button className="cart-trigger" type="button" onClick={onCart} aria-label={`${t('cart')}, ${cartCount}`}><span className="bag-icon">▱</span><span>{t('cart')}</span><b>{cartCount}</b></button><a className="header-cta" href="#quote">{t('quoteCta')} <span>↗</span></a></div>
+    <div className="header-actions"><LocaleControls lang={lang} currency={currency} onLanguage={onLanguage} onCurrency={onCurrency} t={t} /><ThemeControls lang={lang} theme={theme} onTheme={onTheme} t={t} /><button className="cart-trigger" type="button" onClick={onCart} aria-label={`${t('cart')}, ${cartCount}`}><span className="bag-icon">▱</span><span>{t('cart')}</span><b>{cartCount}</b></button><a className="header-cta" href="#quote">{t('quoteCta')} <span>↗</span></a></div>
   </header>
 }
 
@@ -578,6 +729,343 @@ function Portfolio({ t }) {
   </section>
 }
 
+function CommunityGallery({ t, lang }) {
+  const [supabase, setSupabase] = useState(null)
+  const [session, setSession] = useState(null)
+  const [authMode, setAuthMode] = useState('login')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [displayName, setDisplayName] = useState('')
+  const [vehicle, setVehicle] = useState('')
+  const [story, setStory] = useState('')
+  const [instagram, setInstagram] = useState('')
+  const [photo, setPhoto] = useState(null)
+  const [entries, setEntries] = useState([])
+  const [myEntries, setMyEntries] = useState([])
+  const [pendingEntries, setPendingEntries] = useState([])
+  const [isAdmin, setIsAdmin] = useState(false)
+  const [checkingAuth, setCheckingAuth] = useState(isSupabaseConfigured)
+  const [loading, setLoading] = useState(isSupabaseConfigured)
+  const [working, setWorking] = useState(false)
+  const [reviewing, setReviewing] = useState('')
+  const [error, setError] = useState('')
+  const [notice, setNotice] = useState('')
+  const [refreshKey, setRefreshKey] = useState(0)
+  const [photoUrl, setPhotoUrl] = useState('')
+  const user = session?.user
+  const dateLocale = lang === 'mk' ? 'mk-MK' : lang === 'sq' ? 'sq-AL' : 'en-GB'
+
+  useEffect(() => {
+    if (!isSupabaseConfigured) return undefined
+    let active = true
+    getSupabaseClient()
+      .then(client => {
+        if (active) setSupabase(client)
+      })
+      .catch(clientError => {
+        if (active) {
+          setError(`${t('communityErrorPrefix')} ${clientError.message}`)
+          setCheckingAuth(false)
+          setLoading(false)
+        }
+      })
+    return () => { active = false }
+  }, [lang])
+
+  useEffect(() => {
+    if (!supabase) return undefined
+    let active = true
+    supabase.auth.getSession()
+      .then(({ data, error: sessionError }) => {
+        if (sessionError) throw sessionError
+        if (active) setSession(data.session)
+      })
+      .catch(sessionError => {
+        if (active) setError(`${t('communityErrorPrefix')} ${sessionError.message}`)
+      })
+      .finally(() => {
+        if (active) setCheckingAuth(false)
+      })
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, nextSession) => {
+      setSession(nextSession)
+      setError('')
+      setNotice('')
+    })
+    return () => {
+      active = false
+      subscription.unsubscribe()
+    }
+  }, [lang])
+
+  useEffect(() => {
+    if (!photo) {
+      setPhotoUrl('')
+      return undefined
+    }
+    const objectUrl = URL.createObjectURL(photo)
+    setPhotoUrl(objectUrl)
+    return () => URL.revokeObjectURL(objectUrl)
+  }, [photo])
+
+  useEffect(() => {
+    if (!supabase) return undefined
+    let active = true
+    async function loadGallery() {
+      setLoading(true)
+      setError('')
+      try {
+        const { data: approvedRows, error: approvedError } = await supabase
+          .from('community_submissions')
+          .select('id,image_path,display_name,vehicle,story,instagram,status,created_at')
+          .eq('status', 'approved')
+          .order('created_at', { ascending: false })
+          .limit(30)
+        if (approvedError) throw approvedError
+        const publicEntries = await Promise.all(approvedRows.map(async entry => {
+          const { data, error: imageError } = await supabase.storage.from('community-photos').createSignedUrl(entry.image_path, 3600)
+          if (imageError) throw imageError
+          return { ...entry, signedUrl: data.signedUrl }
+        }))
+
+        let ownEntries = []
+        let moderationQueue = []
+        let admin = false
+        if (user) {
+          const { data: membership, error: membershipError } = await supabase
+            .from('community_admins')
+            .select('user_id')
+            .eq('user_id', user.id)
+            .maybeSingle()
+          if (membershipError) throw membershipError
+          admin = Boolean(membership)
+
+          const { data: ownRows, error: ownError } = await supabase
+            .from('community_submissions')
+            .select('id,image_path,display_name,vehicle,story,instagram,status,created_at')
+            .eq('user_id', user.id)
+            .in('status', ['pending', 'approved'])
+            .order('created_at', { ascending: false })
+            .limit(12)
+          if (ownError) throw ownError
+          ownEntries = await Promise.all(ownRows.map(async entry => {
+            const { data, error: imageError } = await supabase.storage.from('community-photos').createSignedUrl(entry.image_path, 3600)
+            if (imageError) throw imageError
+            return { ...entry, signedUrl: data.signedUrl }
+          }))
+
+          if (admin) {
+            const { data: pendingRows, error: pendingError } = await supabase
+              .from('community_submissions')
+              .select('id,image_path,display_name,vehicle,story,instagram,status,created_at')
+              .eq('status', 'pending')
+              .order('created_at', { ascending: true })
+              .limit(50)
+            if (pendingError) throw pendingError
+            moderationQueue = await Promise.all(pendingRows.map(async entry => {
+              const { data, error: imageError } = await supabase.storage.from('community-photos').createSignedUrl(entry.image_path, 3600)
+              if (imageError) throw imageError
+              return { ...entry, signedUrl: data.signedUrl }
+            }))
+          }
+        }
+
+        if (active) {
+          setEntries(publicEntries)
+          setMyEntries(ownEntries)
+          setPendingEntries(moderationQueue)
+          setIsAdmin(admin)
+        }
+      } catch (loadError) {
+        if (active) setError(`${t('communityErrorPrefix')} ${loadError.message}`)
+      } finally {
+        if (active) setLoading(false)
+      }
+    }
+    loadGallery()
+    return () => { active = false }
+  }, [user?.id, refreshKey, lang])
+
+  async function submitAuth(event) {
+    event.preventDefault()
+    if (!supabase) return
+    setWorking(true)
+    setError('')
+    setNotice('')
+    try {
+      const result = authMode === 'signup'
+        ? await supabase.auth.signUp({ email: email.trim(), password, options: { emailRedirectTo: window.location.href.split('#')[0] } })
+        : await supabase.auth.signInWithPassword({ email: email.trim(), password })
+      if (result.error) throw result.error
+      if (authMode === 'signup' && !result.data.session) setNotice(t('communityConfirmEmail'))
+    } catch (authError) {
+      setError(`${t('communityErrorPrefix')} ${authError.message}`)
+    } finally {
+      setWorking(false)
+    }
+  }
+
+  async function signOut() {
+    setWorking(true)
+    setError('')
+    try {
+      const { error: signOutError } = await supabase.auth.signOut()
+      if (signOutError) throw signOutError
+      setPhoto(null)
+      setMyEntries([])
+      setPendingEntries([])
+      setIsAdmin(false)
+    } catch (signOutError) {
+      setError(`${t('communityErrorPrefix')} ${signOutError.message}`)
+    } finally {
+      setWorking(false)
+    }
+  }
+
+  async function submitBuild(event) {
+    event.preventDefault()
+    if (!supabase || !user) return
+    const form = event.currentTarget
+    const extension = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp' }[photo?.type]
+    if (!photo || !extension || photo.size > 8 * 1024 * 1024) {
+      setError(t('communityPhotoError'))
+      return
+    }
+    setWorking(true)
+    setError('')
+    setNotice('')
+    const imagePath = `${user.id}/${crypto.randomUUID()}.${extension}`
+    try {
+      const { error: uploadError } = await supabase.storage.from('community-photos').upload(imagePath, photo, {
+        contentType: photo.type,
+        cacheControl: '3600',
+        upsert: false,
+      })
+      if (uploadError) throw uploadError
+      const { error: insertError } = await supabase.from('community_submissions').insert({
+        user_id: user.id,
+        image_path: imagePath,
+        display_name: displayName.trim(),
+        vehicle: vehicle.trim(),
+        story: story.trim(),
+        instagram: instagram.trim().replace(/^@/, '') || null,
+        publication_consent: true,
+        status: 'pending',
+      })
+      if (insertError) {
+        const { error: cleanupError } = await supabase.storage.from('community-photos').remove([imagePath])
+        throw new Error(cleanupError
+          ? `${insertError.message} (${cleanupError.message})`
+          : insertError.message)
+      }
+      setNotice(t('communitySubmissionSuccess'))
+      setDisplayName('')
+      setVehicle('')
+      setStory('')
+      setInstagram('')
+      setPhoto(null)
+      form.reset()
+      setRefreshKey(key => key + 1)
+    } catch (submitError) {
+      setError(`${t('communityErrorPrefix')} ${submitError.message}`)
+    } finally {
+      setWorking(false)
+    }
+  }
+
+  async function reviewSubmission(entry, status) {
+    if (!supabase || !user || !isAdmin) return
+    setReviewing(entry.id)
+    setError('')
+    setNotice('')
+    try {
+      const { error: updateError } = await supabase.from('community_submissions').update({
+        status,
+        reviewed_at: new Date().toISOString(),
+        reviewed_by: user.id,
+      }).eq('id', entry.id).eq('status', 'pending')
+      if (updateError) throw updateError
+      setRefreshKey(key => key + 1)
+      if (status === 'rejected') {
+        const { error: removeError } = await supabase.storage.from('community-photos').remove([entry.image_path])
+        if (removeError) throw new Error(`${t('communityReject')}: ${removeError.message}`)
+      }
+      setNotice(status === 'approved' ? t('communityApprove') : t('communityReject'))
+    } catch (reviewError) {
+      setError(`${t('communityErrorPrefix')} ${reviewError.message}`)
+    } finally {
+      setReviewing('')
+    }
+  }
+
+  function formatDate(value) {
+    return new Intl.DateTimeFormat(dateLocale, { year: 'numeric', month: 'short', day: 'numeric' }).format(new Date(value))
+  }
+
+  function buildCard(entry, moderator = false) {
+    return <article className="community-card" key={entry.id}>
+      <img src={entry.signedUrl} alt={`${entry.vehicle} — ${entry.display_name}`} loading="lazy" />
+      <div className="community-card-copy">
+        <span className="community-card-date">{formatDate(entry.created_at)}</span>
+        <h3>{entry.vehicle}</h3>
+        <p className="community-card-author">{entry.display_name}{entry.instagram && <span> · @{entry.instagram.replace(/^@/, '')}</span>}</p>
+        <p className="community-card-story">{entry.story}</p>
+        {moderator && <div className="community-review-actions">
+          <button className="community-approve" type="button" disabled={reviewing === entry.id} onClick={() => reviewSubmission(entry, 'approved')}>{t('communityApprove')}</button>
+          <button className="community-reject" type="button" disabled={reviewing === entry.id} onClick={() => reviewSubmission(entry, 'rejected')}>{t('communityReject')}</button>
+        </div>}
+        {!moderator && entry.status === 'pending' && <span className="community-status">{t('communityPending')}</span>}
+      </div>
+    </article>
+  }
+
+  return <section className="section community-section" id="community" aria-labelledby="community-title">
+    <div className="section-heading community-heading">
+      <div><p className="eyebrow section-eyebrow">{t('communityEyebrow')}</p><h2 id="community-title">{t('communityTitle')}<br /><span>{t('communityAccent')}</span></h2></div>
+      <p className="section-intro">{t('communityIntro')}</p>
+    </div>
+    {!isSupabaseConfigured ? <p className="community-feedback" role="status">{t('communityNotConfigured')}</p> : <>
+      <div className="community-layout">
+        <div className="community-gallery-area">
+          <div className="community-subheading"><h3>{t('communityGalleryTitle')}</h3><span>{String(entries.length).padStart(2, '0')}</span></div>
+          {loading ? <p className="community-empty">{t('communityLoading')}</p> : entries.length
+            ? <div className="community-grid">{entries.map(entry => buildCard(entry))}</div>
+            : <p className="community-empty">{t('communityEmpty')}</p>}
+        </div>
+
+        <aside className="community-panel">
+          {!user ? <>
+            <p className="eyebrow community-panel-eyebrow">{t('communityLoginTitle')}</p>
+            <p className="community-panel-intro">{t('communityLoginIntro')}</p>
+            {checkingAuth ? <p className="community-empty">{t('communityLoading')}</p> : <form className="community-form" onSubmit={submitAuth}>
+              <label>{t('communityEmail')}<input type="email" autoComplete="email" required value={email} onChange={event => setEmail(event.target.value)} /></label>
+              <label>{t('communityPassword')}<input type="password" autoComplete={authMode === 'signup' ? 'new-password' : 'current-password'} minLength="8" required value={password} onChange={event => setPassword(event.target.value)} /></label>
+              <button className="button button-lime" type="submit" disabled={working}>{authMode === 'signup' ? t('communityCreateAccount') : t('communityLogin')} <span>↗</span></button>
+              <p className="community-auth-switch">{authMode === 'signup' ? t('communityHaveAccount') : t('communityNeedAccount')} <button type="button" onClick={() => { setAuthMode(mode => mode === 'signup' ? 'login' : 'signup'); setError(''); setNotice('') }}>{authMode === 'signup' ? t('communityLogin') : t('communityCreateAccount')}</button></p>
+            </form>}
+          </> : <>
+            <div className="community-account"><span>{user.email}</span><button type="button" disabled={working} onClick={signOut}>{t('communityLogout')}</button></div>
+            <p className="eyebrow community-panel-eyebrow">{t('communitySubmitTitle')}</p>
+            <form className="community-form" onSubmit={submitBuild}>
+              <label>{t('communityDisplayName')}<input required minLength="2" maxLength="40" value={displayName} onChange={event => setDisplayName(event.target.value)} placeholder={t('communityDisplayPlaceholder')} /></label>
+              <label>{t('communityVehicle')}<input required minLength="2" maxLength="80" value={vehicle} onChange={event => setVehicle(event.target.value)} placeholder={t('communityVehiclePlaceholder')} /></label>
+              <label>{t('communityStory')}<textarea required minLength="8" maxLength="500" rows="3" value={story} onChange={event => setStory(event.target.value)} placeholder={t('communityStoryPlaceholder')} /></label>
+              <label>{t('communityInstagram')}<input maxLength="40" value={instagram} onChange={event => setInstagram(event.target.value)} placeholder={t('communityInstagramPlaceholder')} /></label>
+              <label className="community-photo-field">{t('communityPhoto')}<input type="file" accept="image/jpeg,image/png,image/webp" required onChange={event => setPhoto(event.target.files?.[0] ?? null)} /><span>＋ &nbsp; {photo?.name || t('communityPhotoHelp')}</span></label>
+              {photoUrl && <img className="community-photo-preview" src={photoUrl} alt={`${t('communityPhoto')} — ${vehicle || t('communityVehicle')}`} />}
+              <label className="community-consent"><input type="checkbox" required /><span>{t('communityConsent')}</span></label>
+              <button className="button button-lime" type="submit" disabled={working}>{working ? t('communitySubmitted') : t('communitySubmit')} <span>↗</span></button>
+            </form>
+          </>}
+        </aside>
+      </div>
+
+      {myEntries.length > 0 && <div className="community-own-posts"><div className="community-subheading"><h3>{t('communityYourSubmissions')}</h3><span>{String(myEntries.length).padStart(2, '0')}</span></div><div className="community-grid">{myEntries.map(entry => buildCard(entry))}</div></div>}
+      {isAdmin && <div className="community-moderation"><div className="community-subheading"><h3>{t('communityPendingTitle')}</h3><span>{String(pendingEntries.length).padStart(2, '0')}</span></div>{pendingEntries.length ? <div className="community-grid">{pendingEntries.map(entry => buildCard(entry, true))}</div> : <p className="community-empty">{t('communityEmpty')}</p>}</div>}
+      {(error || notice) && <p className={`community-feedback${error ? ' is-error' : ''}`} role={error ? 'alert' : 'status'}>{error || notice}</p>}
+    </>}
+  </section>
+}
+
 function Contact({ t, lang }) {
   const [sent, setSent] = useState(false)
   function submit(event) {
@@ -636,16 +1124,24 @@ function CartDrawer({ cart, onClose, onChange, t, currency, lang }) {
 export default function App() {
   const [lang, setLang] = useState('mk')
   const [currency, setCurrency] = useState('EUR')
+  const [theme, setTheme] = useState(() => {
+    const storedTheme = window.localStorage?.getItem('spectra-theme')
+    return themes.some(option => option.id === storedTheme) ? storedTheme : 'cyan'
+  })
   const [cart, setCart] = useState([])
   const [cartOpen, setCartOpen] = useState(false)
   const [stickyCtaSuppressed, setStickyCtaSuppressed] = useState(false)
-  const t = key => translations[lang][key] ?? configuratorCopy[lang]?.[key] ?? translations.en[key] ?? configuratorCopy.en[key] ?? key
+  const t = key => translations[lang][key] ?? configuratorCopy[lang]?.[key] ?? themeTranslations[lang]?.[key] ?? communityTranslations[lang]?.[key] ?? translations.en[key] ?? configuratorCopy.en[key] ?? themeTranslations.en[key] ?? communityTranslations.en[key] ?? key
   useEffect(() => {
     document.documentElement.lang = lang
     document.title = t('documentTitle')
     const description = document.querySelector('meta[name="description"]')
     if (description) description.content = t('metaDescription')
   }, [lang])
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme
+    window.localStorage?.setItem('spectra-theme', theme)
+  }, [theme])
   useEffect(() => {
     const ctaSections = [...document.querySelectorAll('#quote, .project-spotlight')]
     if (!ctaSections.length || typeof IntersectionObserver === 'undefined') return undefined
@@ -669,5 +1165,5 @@ export default function App() {
     setCart(current => current.map(item => item.key === key ? { ...item, quantity: item.quantity + delta } : item).filter(item => item.quantity > 0))
   }
   const localeProps = { lang, currency, t }
-  return <div className="page"><Header cartCount={count} onCart={() => setCartOpen(true)} onLanguage={setLang} onCurrency={setCurrency} {...localeProps} /><main><Hero t={t} /><IntroStrip t={t} /><Services t={t} /><TrustSection t={t} /><ProjectSpotlight t={t} /><Shop onAdd={addToCart} {...localeProps} /><MerchSection onAdd={product => addToCart(product, true)} {...localeProps} /><QuoteCalculator {...localeProps} /><Portfolio t={t} /><Contact t={t} lang={lang} /></main><Footer t={t} /><a className={`mobile-sticky-quote${stickyCtaSuppressed ? ' is-hidden' : ''}`} href="#quote" aria-hidden={stickyCtaSuppressed} tabIndex={stickyCtaSuppressed ? -1 : 0}>{t('quoteCta')} <span>↗</span></a>{cartOpen && <CartDrawer cart={cart} onClose={() => setCartOpen(false)} onChange={changeQuantity} {...localeProps} />}</div>
+  return <div className="page"><Header cartCount={count} onCart={() => setCartOpen(true)} onLanguage={setLang} onCurrency={setCurrency} theme={theme} onTheme={setTheme} {...localeProps} /><main><Hero t={t} /><IntroStrip t={t} /><Services t={t} /><TrustSection t={t} /><ProjectSpotlight t={t} /><Shop onAdd={addToCart} {...localeProps} /><MerchSection onAdd={product => addToCart(product, true)} {...localeProps} /><QuoteCalculator {...localeProps} /><Portfolio t={t} /><CommunityGallery t={t} lang={lang} /><Contact t={t} lang={lang} /></main><Footer t={t} /><a className={`mobile-sticky-quote${stickyCtaSuppressed ? ' is-hidden' : ''}`} href="#quote" aria-hidden={stickyCtaSuppressed} tabIndex={stickyCtaSuppressed ? -1 : 0}>{t('quoteCta')} <span>↗</span></a>{cartOpen && <CartDrawer cart={cart} onClose={() => setCartOpen(false)} onChange={changeQuantity} {...localeProps} />}</div>
 }

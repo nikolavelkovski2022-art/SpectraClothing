@@ -21,7 +21,7 @@ await build({
   bundle: true,
   format: 'esm',
   jsx: 'automatic',
-  external: ['react', 'react-dom', 'react-dom/client', 'react/jsx-runtime'],
+  external: ['react', 'react-dom', 'react-dom/client', 'react/jsx-runtime', '@supabase/supabase-js'],
   define: { 'import.meta.env.BASE_URL': JSON.stringify('/') },
   outfile: bundlePath,
   loader: { '.css': 'empty' },
@@ -44,6 +44,16 @@ if (!window.location) {
     hash: '',
     reload() {},
   }
+}
+
+if (!window.localStorage) {
+  const storage = new Map()
+  Object.defineProperty(window, 'localStorage', {
+    value: {
+      getItem(key) { return storage.get(key) ?? null },
+      setItem(key, value) { storage.set(key, String(value)) },
+    },
+  })
 }
 
 globalThis.window = window
@@ -102,9 +112,14 @@ const checks = [
   ['email quote option', /ИСПРАТИ ГО БАРАЊЕТО ПО Е-ПОШТА/],
   ['studio trust element', /ОД ИДЕЈА ДО ФИНАЛНА ИЗРАБОТКА/],
   ['WhatsApp direct contact', /ПИШИ НИ ДИРЕКТНО/],
+  ['theme color selector', /THEME COLOR|БОЈА НА ТЕМАТА/],
+  ['four relaxing accent themes', /Лилакова.*Светло сина.*Нане.*Тиркизна/],
+  ['navigation links to the riders community section', /href="#community">Заедница/],
   ['featured project marketing copy', /ТВОЈОТ СТИЛ\.[\s\S]*ТВОЈ ПОТПИС\./],
   ['featured project uses real Spectra car photo', /spotlight-photo[\s\S]*spectra-rally-car\.jpg/],
   ['featured project links directly to WhatsApp', /spotlight-actions[\s\S]*wa\.me\/38971942295\?text=/],
+  ['fan community gallery renders with a studio section', /НАШИТЕ ВОЗАЧИ\.[\s\S]*Supabase податоците за поврзување/],
+  ['community gallery reports missing backend setup', /Supabase податоците за поврзување/],
   ['portfolio', /ИЗБРАНИ ПРОЕКТИ/],
   ['real vehicle, fairing, and custom decal portfolio images', /spectra-rally-car\.jpg[\s\S]*spectra-fairings\.jpg[\s\S]*spectra-custom-decals\.jpg/],
   ['portfolio project image set', /Spectra Rally \/ Corsa|spectra-rally-car\.jpg/],
@@ -121,9 +136,30 @@ const checks = [
 
 const html = container.innerHTML
 const failed = []
+const appSource = fs.readFileSync(path.join(projectRoot, 'src', 'App.jsx'), 'utf8')
+const communitySql = fs.readFileSync(path.join(projectRoot, 'supabase', 'community.sql'), 'utf8')
 
 for (const [name, pattern] of checks) {
   if (!pattern.test(html)) failed.push(name)
+  else console.log(`PASS  ${name}`)
+}
+for (const [name, pattern] of [
+  ['community registration and password login use Supabase Auth', /auth\.signUp[\s\S]*auth\.signInWithPassword/],
+  ['community upload requires an image and size limit', /photo\.size > 8 \* 1024 \* 1024/],
+  ['rejected posts are removed from the review queue and public gallery', /status === 'rejected'[\s\S]*storage\.from\('community-photos'\)\.remove/],
+]) {
+  if (!pattern.test(appSource)) failed.push(name)
+  else console.log(`PASS  ${name}`)
+}
+for (const [name, pattern] of [
+  ['community submissions are protected by row-level security', /alter table public\.community_submissions enable row level security/i],
+  ['only admins can approve or reject submissions', /Only community admins can review submissions[\s\S]*is_community_admin\(\)/i],
+  ['uploads require explicit publication consent', /publication_consent is true/i],
+  ['community photos are private and file-size limited', /'community-photos',[\s\S]*false,[\s\S]*8388608/i],
+  ['only approved community photos can be signed for public display', /Approved community images can be signed for display[\s\S]*status = 'approved'/i],
+  ['anonymous visitors cannot query user account identifiers', /grant select \(id, image_path, display_name, vehicle, story, instagram, status, created_at\)[\s\S]*to anon/i],
+]) {
+  if (!pattern.test(communitySql)) failed.push(name)
   else console.log(`PASS  ${name}`)
 }
 
@@ -206,12 +242,30 @@ await selectValue(serviceSelect, 'paint')
 
 const languageButtons = container.querySelectorAll('.header-actions .locale-group:first-child button')
 const currencyButtons = container.querySelectorAll('.header-actions .currency-group button')
+const themeButtons = container.querySelectorAll('.header-actions .theme-controls button')
+if (themeButtons.length !== 4 || !themeButtons[3].getAttribute('aria-pressed') || document.documentElement.dataset.theme !== 'cyan') {
+  failed.push('theme selector renders four options with the default cyan theme selected')
+} else console.log('PASS  theme selector renders four options and selects cyan by default')
+themeButtons[0].click()
+await new Promise((r) => setTimeout(r, 30))
+if (document.documentElement.dataset.theme !== 'lilac' || themeButtons[0].getAttribute('aria-pressed') !== 'true' ||
+    window.localStorage?.getItem('spectra-theme') !== 'lilac') {
+  failed.push('theme selector applies and remembers lilac accent')
+} else console.log('PASS  theme selector applies and remembers lilac accent')
+themeButtons[1].click()
+await new Promise((r) => setTimeout(r, 30))
+if (document.documentElement.dataset.theme !== 'blue') {
+  failed.push('theme selector changes the accent to soft blue')
+} else console.log('PASS  theme selector changes the accent to soft blue')
 languageButtons[2].click()
 await new Promise((r) => setTimeout(r, 30))
 if (document.documentElement.lang !== 'en' || !container.innerHTML.includes('DESERVES PERFECTION.')) {
   failed.push('English switcher updates page language')
 } else console.log('PASS  English switcher updates page language')
 const englishContent = container.textContent.toLocaleUpperCase()
+if (!container.querySelector('.header-actions .theme-controls button[aria-label="Lilac"]')) {
+  failed.push('theme selector labels update with the English language')
+} else console.log('PASS  theme selector labels update with the English language')
 if (!englishContent.includes('YOUR SIGNATURE.') || !englishContent.includes('TALK ABOUT YOUR PROJECT') ||
     !container.querySelector('.spotlight-actions a[href^="https://wa.me/38971942295?text="]')) {
   failed.push('featured project marketing section translates and retains WhatsApp action in English')
