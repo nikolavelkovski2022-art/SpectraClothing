@@ -203,6 +203,19 @@ await selectValue(serviceSelect, 'decals')
 if (!container.querySelector('.sticker-designer') || !container.querySelector('.sticker-live-preview')) {
   failed.push('custom sticker designer opens for decal service')
 } else console.log('PASS  custom sticker designer opens for decal service')
+if (!container.querySelector('.estimate strong')?.textContent.includes('3.300 ден.') ||
+    !container.querySelector('.designer-body select option[value="fullMotor"]')?.textContent.includes('цел мотор')) {
+  failed.push('full motorcycle sticker kit is estimated at 3,300 MKD')
+} else console.log('PASS  full motorcycle sticker kit is estimated at 3,300 MKD')
+const decalVehicleSelect = container.querySelectorAll('.calculator .calc-label select')[1]
+await selectValue(decalVehicleSelect, 'car')
+if (container.querySelector('.designer-body select option[value="fullMotor"]') ||
+    !container.querySelector('.estimate strong')?.textContent.includes('1.800 ден.')) {
+  failed.push('car decal selection switches away from motorcycle sticker kit pricing')
+} else console.log('PASS  car decal selection switches away from motorcycle sticker kit pricing')
+await selectValue(decalVehicleSelect, 'motorcycle')
+const decalSizeSelect = container.querySelectorAll('.designer-body .designer-controls select')[1]
+await selectValue(decalSizeSelect, 'fullMotor')
 
 if (!container.querySelector('.sticker-live-preview')?.textContent.includes('SPECTRA') ||
     !decodeURIComponent(container.querySelector('.quote-submit')?.getAttribute('href') ?? '').includes('"SPECTRA"')) {
@@ -218,11 +231,17 @@ container.querySelector('.designer-toggle')?.click()
 
 await selectValue(serviceSelect, 'paint')
 const scooterEstimate = container.querySelector('.estimate strong')?.textContent
+if (!scooterEstimate?.includes('8.500 ден.')) {
+  failed.push('scooter paint estimate starts at 8,500 MKD')
+} else console.log('PASS  scooter paint estimate starts at 8,500 MKD')
 const paintSelects = container.querySelectorAll('.calculator .calc-label select')
 await selectValue(paintSelects[2], 'sportbike')
 if (scooterEstimate === container.querySelector('.estimate strong')?.textContent) {
   failed.push('motorcycle type updates painting estimate')
 } else console.log('PASS  motorcycle type updates painting estimate')
+if (!container.querySelector('.estimate strong')?.textContent.includes('14.500 ден.')) {
+  failed.push('other motorcycle paint estimate starts at 14,500 MKD')
+} else console.log('PASS  other motorcycle paint estimate starts at 14,500 MKD')
 if (container.querySelectorAll('.paint-swatches button').length < 7 || !container.querySelector('.spectrum-control input[type="range"]')) {
   failed.push('paint color catalog and spectrum controls render')
 } else console.log('PASS  paint color catalog and spectrum controls render')
@@ -231,6 +250,9 @@ await selectValue(serviceSelect, 'repair')
 if (!container.textContent.includes('Скршен држач / носач')) {
   failed.push('plastic repair service exposes damage options')
 } else console.log('PASS  plastic repair service exposes damage options')
+if (!container.querySelector('.estimate strong')?.textContent.includes('3.200 ден.')) {
+  failed.push('plastic repair with painting starts at 3,200 MKD')
+} else console.log('PASS  plastic repair with painting starts at 3,200 MKD')
 
 await selectValue(serviceSelect, 'apparel')
 if (!container.textContent.includes('Премиум маица') || !container.textContent.includes('КОЛИЧИНА') ||

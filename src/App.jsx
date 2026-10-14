@@ -2,6 +2,8 @@ import { useEffect, useMemo, useState } from 'react'
 import { getSupabaseClient, isSupabaseConfigured } from './lib/supabase.js'
 
 const WHATSAPP_NUMBER = '38971942295'
+const MKD_PER_EUR = 61.5
+const euroPriceFromDenars = amount => Math.round((amount / MKD_PER_EUR) * 100) / 100
 const languageNames = { mk: 'МК', sq: 'AL', en: 'EN' }
 const themes = [
   { id: 'lilac', color: '#b9a5ff' },
@@ -243,6 +245,7 @@ const configuratorCopy = {
     stickerSmall: 'Мала · 5 cm',
     stickerMedium: 'Средна · 10 cm',
     stickerLarge: 'Голема · 20 cm',
+    stickerFullMotor: 'Комплет налепници за цел мотор',
     stickerQuantity: 'БРОЈ НА НАЛЕПНИЦИ',
     stickerFinish: 'МАТЕРИЈАЛ / ФИНИШ',
     stickerPreview: 'ПРЕГЛЕД НА ДИЗАЈНОТ',
@@ -310,6 +313,7 @@ const configuratorCopy = {
     stickerSmall: 'E vogël · 5 cm',
     stickerMedium: 'Mesatare · 10 cm',
     stickerLarge: 'E madhe · 20 cm',
+    stickerFullMotor: 'Komplet ngjitësesh për të gjithë motorin',
     stickerQuantity: 'SASIA E NGJITËSEVE',
     stickerFinish: 'MATERIALI / PËRFUNDIMI',
     stickerPreview: 'PARAPAMJE E DIZAJNIT',
@@ -377,6 +381,7 @@ const configuratorCopy = {
     stickerSmall: 'Small · 5 cm',
     stickerMedium: 'Medium · 10 cm',
     stickerLarge: 'Large · 20 cm',
+    stickerFullMotor: 'Full motorcycle sticker kit',
     stickerQuantity: 'STICKER QUANTITY',
     stickerFinish: 'MATERIAL / FINISH',
     stickerPreview: 'DESIGN PREVIEW',
@@ -407,12 +412,12 @@ const configuratorCopy = {
 }
 
 const products = [
-  { id: 'stage6', brand: 'STAGE6', nameKey: 'productStage6', category: 'performance', price: 9, image: '/images/stickers-stage6.png', tone: 'orange' },
-  { id: 'malossi', brand: 'MALOSSI', nameKey: 'productMalossi', category: 'performance', price: 12, image: '/images/stickers-malossi.png', tone: 'red' },
-  { id: 'polini', brand: 'POLINI', nameKey: 'productPolini', category: 'performance', price: 11, image: '/images/stickers-polini.png', tone: 'blue' },
-  { id: '2fast', brand: '2FAST', nameKey: 'product2fast', category: 'racing', price: 8, image: '/images/stickers-2fast.png', tone: 'lime' },
-  { id: 'doppler', brand: 'DOPPLER', nameKey: 'productDoppler', category: 'performance', price: 9, image: '/images/stickers-doppler.png', tone: 'blue' },
-  { id: 'spectra', brand: 'SPECTRA', nameKey: 'productSpectra', category: 'spectra', price: 14, image: '/images/spectra-custom-decals.jpg', tone: 'lime' },
+  { id: 'stage6', brand: 'STAGE6', nameKey: 'productStage6', category: 'performance', price: 10, image: '/images/stickers-stage6.png', tone: 'orange' },
+  { id: 'malossi', brand: 'MALOSSI', nameKey: 'productMalossi', category: 'performance', price: 13, image: '/images/stickers-malossi.png', tone: 'red' },
+  { id: 'polini', brand: 'POLINI', nameKey: 'productPolini', category: 'performance', price: 12, image: '/images/stickers-polini.png', tone: 'blue' },
+  { id: '2fast', brand: '2FAST', nameKey: 'product2fast', category: 'racing', price: 9, image: '/images/stickers-2fast.png', tone: 'lime' },
+  { id: 'doppler', brand: 'DOPPLER', nameKey: 'productDoppler', category: 'performance', price: 10, image: '/images/stickers-doppler.png', tone: 'blue' },
+  { id: 'spectra', brand: 'SPECTRA', nameKey: 'productSpectra', category: 'spectra', price: 16, image: '/images/spectra-custom-decals.jpg', tone: 'lime' },
 ]
 
 const merch = [
@@ -445,7 +450,7 @@ const placements = ['chest', 'backPrint', 'sleeve']
 const finishKeys = { finishGloss: 'Gloss', finishMatte: 'Matte', finishChrome: 'Chrome', finishHolo: 'Holographic', finishReflective: 'Reflective' }
 const priceText = (amount, currency, lang) => {
   const eur = `€${amount.toFixed(2)}`
-  const mkd = `${Math.round(amount * 61.5).toLocaleString('mk-MK')} ден.`
+  const mkd = `${Math.round(amount * MKD_PER_EUR).toLocaleString('mk-MK')} ден.`
   return currency === 'MKD' ? `${mkd} / ${eur}` : `${eur} / ${mkd}`
 }
 
@@ -609,7 +614,7 @@ function QuoteCalculator({ t, currency, lang }) {
   const [service, setService] = useState('paint')
   const [vehicle, setVehicle] = useState('motorcycle')
   const [motorType, setMotorType] = useState('scooter')
-  const [finish, setFinish] = useState('metallic')
+  const [finish, setFinish] = useState('standardPaint')
   const [paintHex, setPaintHex] = useState('#00f0ff')
   const [spectrumHue, setSpectrumHue] = useState(184)
   const [repairType, setRepairType] = useState('smallCrack')
@@ -621,7 +626,7 @@ function QuoteCalculator({ t, currency, lang }) {
   const [stickerOpen, setStickerOpen] = useState(true)
   const [stickerText, setStickerText] = useState('SPECTRA')
   const [stickerShape, setStickerShape] = useState('stickerRectangle')
-  const [stickerSize, setStickerSize] = useState('medium')
+  const [stickerSize, setStickerSize] = useState('fullMotor')
   const [stickerQuantity, setStickerQuantity] = useState(1)
   const [requestDetails, setRequestDetails] = useState('')
   const [otherVehicle, setOtherVehicle] = useState('')
@@ -647,19 +652,38 @@ function QuoteCalculator({ t, currency, lang }) {
   const vehicleName = vehicle === 'motorcycle'
     ? `${t('motorcycle')} — ${t(motorType)}${motorType === 'otherBike' && otherVehicle ? ` (${otherVehicle})` : ''}`
     : t('car')
-  const stickerSizes = { small: 12, medium: 25, large: 45 }
+  const stickerSizes = {
+    small: euroPriceFromDenars(500),
+    medium: euroPriceFromDenars(1000),
+    large: euroPriceFromDenars(1800),
+    fullMotor: euroPriceFromDenars(3300),
+  }
   const stickerCount = Math.max(1, Math.min(100, Number(stickerQuantity) || 1))
   const garmentPrices = { tee: 45, hoodie: 79, crewneck: 65 }
   let low
   if (service === 'paint') {
-    const motorcyclePrices = { scooter: 320, sportbike: 580, largeBike: 720, otherBike: 500 }
-    low = vehicle === 'car' ? 1450 : motorcyclePrices[motorType]
-    low += { standardPaint: 0, metallic: 140, chameleon: 290 }[finish]
+    const motorcyclePrices = {
+      scooter: euroPriceFromDenars(8500),
+      sportbike: euroPriceFromDenars(14500),
+      largeBike: euroPriceFromDenars(14500),
+      otherBike: euroPriceFromDenars(14500),
+    }
+    low = vehicle === 'car' ? euroPriceFromDenars(35000) : motorcyclePrices[motorType]
+    low += { standardPaint: 0, metallic: euroPriceFromDenars(1500), chameleon: euroPriceFromDenars(3000) }[finish]
   } else if (service === 'repair') {
-    low = { smallCrack: 45, brokenMount: 55, scratches: 70, multipleDamage: 130 }[repairType]
+    low = {
+      smallCrack: euroPriceFromDenars(3200),
+      brokenMount: euroPriceFromDenars(4200),
+      scratches: euroPriceFromDenars(3500),
+      multipleDamage: euroPriceFromDenars(6000),
+    }[repairType]
     if (vehicle === 'car') low = Math.round(low * 1.5)
   } else if (service === 'decals') {
-    low = (stickerSizes[stickerSize] + { standardVinyl: 0, reflectiveVinyl: 4, customGraphics: 7 }[finish]) * stickerCount
+    low = (stickerSizes[stickerSize] + {
+      standardVinyl: 0,
+      reflectiveVinyl: euroPriceFromDenars(400),
+      customGraphics: euroPriceFromDenars(600),
+    }[finish]) * stickerCount
   } else {
     low = garmentPrices[apparelType] * stickerCount
   }
@@ -679,10 +703,10 @@ function QuoteCalculator({ t, currency, lang }) {
   const email = `mailto:?subject=${encodeURIComponent(t('estimateSubject'))}&body=${message}`
   return <section className="section quote-section" id="quote"><div className="quote-grid"><div className="quote-copy"><p className="eyebrow section-eyebrow">{t('quoteEyebrow')}</p><h2>{t('quoteTitle')}<br /><span>{t('quoteAccent')}</span></h2><p>{t('quoteDescription')}</p><div className="quote-note"><span>↳</span> {t('estimateNote')}</div></div>
     <div className="calculator"><div className="calculator-top"><span>{t('calculator')}</span><span>01 — 04</span></div>
-      <label className="calc-label">{t('chooseService')}<select value={service} onChange={event => { const next = event.target.value; setService(next); setFinish(next === 'paint' ? 'metallic' : 'standardVinyl'); setStickerOpen(next === 'decals') }}>
+      <label className="calc-label">{t('chooseService')}<select value={service} onChange={event => { const next = event.target.value; setService(next); setFinish(next === 'paint' ? 'standardPaint' : 'standardVinyl'); setStickerOpen(next === 'decals') }}>
         <option value="paint">{t('paintOption')}</option><option value="decals">{t('customStickersOption')}</option><option value="apparel">{t('makeShirtOption')}</option><option value="repair">{t('serviceRepairOption')}</option>
       </select></label>
-      {(service === 'paint' || service === 'repair' || service === 'decals') && <label className="calc-label">{t('vehicleKindLabel')}<select value={vehicle} onChange={event => setVehicle(event.target.value)}><option value="motorcycle">{t('motorcycle')}</option><option value="car">{t('car')}</option></select></label>}
+      {(service === 'paint' || service === 'repair' || service === 'decals') && <label className="calc-label">{t('vehicleKindLabel')}<select value={vehicle} onChange={event => { const next = event.target.value; setVehicle(next); if (next === 'car' && stickerSize === 'fullMotor') setStickerSize('large') }}><option value="motorcycle">{t('motorcycle')}</option><option value="car">{t('car')}</option></select></label>}
       {(service === 'paint' || service === 'repair') && vehicle === 'motorcycle' && <label className="calc-label">{t('motorType')}<select value={motorType} onChange={event => setMotorType(event.target.value)}><option value="scooter">{t('scooter')}</option><option value="sportbike">{t('sportbike')}</option><option value="largeBike">{t('largeBike')}</option><option value="otherBike">{t('otherBike')}</option></select></label>}
       {motorType === 'otherBike' && vehicle === 'motorcycle' && (service === 'paint' || service === 'repair') && <label className="calc-label">{t('otherVehicle')}<input value={otherVehicle} onChange={event => setOtherVehicle(event.target.value)} placeholder={t('vehiclePlaceholder')} maxLength={60} /></label>}
       {service === 'paint' && <>
@@ -699,7 +723,7 @@ function QuoteCalculator({ t, currency, lang }) {
           <label className="calc-label">{t('stickerText')}<input value={stickerText} onChange={event => setStickerText(event.target.value.slice(0, 24))} placeholder={t('stickerPlaceholder')} maxLength={24} /></label>
           <div className="sticker-preview-wrap"><span>{t('stickerPreview')}</span><div className={`sticker-live-preview shape-${stickerShape}`} style={{ '--sticker-color': paintHex }}>{stickerText || t('stickerPlaceholder')}</div></div>
           <div className="designer-controls"><label className="calc-label">{t('stickerShape')}<select value={stickerShape} onChange={event => setStickerShape(event.target.value)}><option value="stickerRectangle">{t('stickerRectangle')}</option><option value="stickerCircle">{t('stickerCircle')}</option><option value="stickerOutline">{t('stickerOutline')}</option></select></label>
-            <label className="calc-label">{t('stickerSize')}<select value={stickerSize} onChange={event => setStickerSize(event.target.value)}><option value="small">{t('stickerSmall')}</option><option value="medium">{t('stickerMedium')}</option><option value="large">{t('stickerLarge')}</option></select></label></div>
+            <label className="calc-label">{t('stickerSize')}<select value={stickerSize} onChange={event => setStickerSize(event.target.value)}><option value="small">{t('stickerSmall')}</option><option value="medium">{t('stickerMedium')}</option><option value="large">{t('stickerLarge')}</option>{vehicle === 'motorcycle' && <option value="fullMotor">{t('stickerFullMotor')}</option>}</select></label></div>
           <div className="designer-controls"><label className="calc-label">{t('stickerFinish')}<select value={finish} onChange={event => setFinish(event.target.value)}>{finishesForService.map(key => <option key={key} value={key}>{t(key)}</option>)}</select></label>
             <label className="calc-label">{t('stickerQuantity')}<input type="number" min="1" max="100" value={stickerQuantity} onChange={event => setStickerQuantity(event.target.value)} /></label></div>
           <label className="calc-label sticker-color-input">{t('paintColor')}<input type="color" value={paintHex.startsWith('#') ? paintHex : '#00f0ff'} onChange={event => { setPaintHex(event.target.value); setSpectrumHue(hexToHue(event.target.value)) }} /></label>
