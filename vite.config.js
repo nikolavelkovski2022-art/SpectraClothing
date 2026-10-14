@@ -1,9 +1,9 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
-// GitHub Pages project sites are served from https://<user>.github.io/<repo>/.
-// Override with:  VITE_BASE=/ npm run build   (for local / custom domains)
-const base = process.env.VITE_BASE || '/SpectraClothing/'
+// Custom domains and Vercel/Cloudflare Pages serve from the root.
+// GitHub Pages project sites set VITE_BASE to /SpectraClothing/ in their workflow.
+const base = process.env.VITE_BASE || '/'
 
 export default defineConfig({
   base,
