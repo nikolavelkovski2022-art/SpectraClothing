@@ -22,6 +22,7 @@ await build({
   format: 'esm',
   jsx: 'automatic',
   external: ['react', 'react-dom', 'react-dom/client', 'react/jsx-runtime'],
+  define: { 'import.meta.env.BASE_URL': JSON.stringify('/') },
   outfile: bundlePath,
   loader: { '.css': 'empty' },
   logLevel: 'silent',
@@ -74,13 +75,16 @@ const checks = [
   ['painting service', /Фарбање мотори и коли/],
   ['custom decals service', /Персонализирани декали/],
   ['tuning brand product', /STAGE6/],
+  ['real Stage6 sticker sheet preview', /stickers-stage6\.png/],
+  ['real Malossi sticker sheet preview', /stickers-malossi\.png/],
+  ['real Polini sticker sheet preview', /stickers-polini\.png/],
+  ['real 2Fast sticker logo preview', /stickers-2fast\.png/],
+  ['real Doppler sticker sheet preview', /stickers-doppler\.png/],
   ['Malossi products', /MALOSSI/],
   ['Polini products', /POLINI/],
   ['2Fast products', /2FAST/],
-  ['RPG products', />RPG</],
-  ['Metrakit products', /METRAKIT/],
   ['Doppler products', /DOPPLER/],
-  ['Motoforce products', /MOTOFORCE/],
+  ['RPG, Pro Race, and Factory stickers are removed', /^(?![\s\S]*(?:RPG|METRAKIT|MOTOFORCE|Pro Race|Factory серија|Factory Series))[\s\S]*$/],
   ['product finish selector', /Холографска/],
   ['category filters', /Перформанси.*Тркање.*Спектра/],
   ['merch section', /СПЕКТРА ОБЛЕКА/],
@@ -98,10 +102,20 @@ const checks = [
   ['email quote option', /ИСПРАТИ ГО БАРАЊЕТО ПО Е-ПОШТА/],
   ['studio trust element', /ОД ИДЕЈА ДО ФИНАЛНА ИЗРАБОТКА/],
   ['WhatsApp direct contact', /ПИШИ НИ ДИРЕКТНО/],
+  ['featured project marketing copy', /ТВОЈОТ СТИЛ\.[\s\S]*ТВОЈ ПОТПИС\./],
+  ['featured project uses real Spectra car photo', /spotlight-photo[\s\S]*spectra-rally-car\.jpg/],
+  ['featured project links directly to WhatsApp', /spotlight-actions[\s\S]*wa\.me\/38971942295\?text=/],
   ['portfolio', /ИЗБРАНИ ПРОЕКТИ/],
+  ['real vehicle, fairing, and custom decal portfolio images', /spectra-rally-car\.jpg[\s\S]*spectra-fairings\.jpg[\s\S]*spectra-custom-decals\.jpg/],
+  ['portfolio project image set', /Spectra Rally \/ Corsa|spectra-rally-car\.jpg/],
   ['contact form', /ТЕЛЕФОН \/ WHATSAPP/],
+  ['phone number at contact and page end', /071 942 295/],
+  ['phone and WhatsApp connect to supplied number', /tel:\+38971942295|wa\.me\/38971942295/],
+  ['Google Maps location for Zenix Zperformance', /Zenix Zperformance — Google Maps/],
+  ['embedded Google Maps and directions link', /maps\.google\.com\/maps\?q=Zenix%20Zperformance%20Kumanovo&amp;output=embed|maps\.google\.com\/maps\?q=Zenix%20Zperformance%20Kumanovo&output=embed/],
   ['reference photo upload', /type="file"/],
   ['Instagram contact', /SPECTRA\.KU/],
+  ['locally hosted Spectra project and apparel photos', /\/images\/spectra-(?:scooter|shirt|workshop)\.jpg/],
   ['footer', /SPECTRACUSTOMS\. СОЗДАДЕНО ЗА ПАТ/],
 ]
 
@@ -112,6 +126,30 @@ for (const [name, pattern] of checks) {
   if (!pattern.test(html)) failed.push(name)
   else console.log(`PASS  ${name}`)
 }
+
+const productImagePaths = Array.from(
+  container.querySelectorAll('.product-visual img'),
+  image => image.getAttribute('src') ?? '',
+)
+if (container.querySelectorAll('.product-card').length !== 6) {
+  failed.push('sticker shop contains only six requested products')
+} else console.log('PASS  sticker shop contains only six requested products')
+for (const image of [
+  'stickers-stage6.png',
+  'stickers-malossi.png',
+  'stickers-polini.png',
+  'stickers-2fast.png',
+  'stickers-doppler.png',
+  'spectra-custom-decals.jpg',
+]) {
+  if (!productImagePaths.some(path => path.endsWith(image))) {
+    failed.push(`product card loads ${image}`)
+  } else console.log(`PASS  product card loads ${image}`)
+}
+
+if (container.querySelectorAll('.gallery-card').length !== 5) {
+  failed.push('five real project photos render in the portfolio')
+} else console.log('PASS  five real project photos render in the portfolio')
 
 if (failed.length) {
   console.error('\nFAILED:', failed.join(' | '))
@@ -174,6 +212,10 @@ if (document.documentElement.lang !== 'en' || !container.innerHTML.includes('DES
   failed.push('English switcher updates page language')
 } else console.log('PASS  English switcher updates page language')
 const englishContent = container.textContent.toLocaleUpperCase()
+if (!englishContent.includes('YOUR SIGNATURE.') || !englishContent.includes('TALK ABOUT YOUR PROJECT') ||
+    !container.querySelector('.spotlight-actions a[href^="https://wa.me/38971942295?text="]')) {
+  failed.push('featured project marketing section translates and retains WhatsApp action in English')
+} else console.log('PASS  featured project marketing section translates to English')
 if (!englishContent.includes('MOTORCYCLE & CAR PAINTING') || !englishContent.includes('PREMIUM HEAVYWEIGHT TEE') || !englishContent.includes('PRICE ESTIMATOR') || !englishContent.includes('PROJECT DETAILS') || !englishContent.includes('PLASTIC REPAIR') || !englishContent.includes('COLOR SPECTRUM')) {
   failed.push('English translations cover service configurator and contact')
 } else console.log('PASS  English translations cover service configurator and contact')
@@ -184,6 +226,10 @@ if (document.documentElement.lang !== 'sq' || !container.innerHTML.includes('MER
   failed.push('Albanian switcher updates page language')
 } else console.log('PASS  Albanian switcher updates page language')
 const albanianContent = container.textContent.toLocaleUpperCase()
+if (!albanianContent.includes('NËNSHKRIMI YT.') || !albanianContent.includes('FLISIM PËR PROJEKTIN TËND') ||
+    !container.querySelector('.spotlight-actions a[href^="https://wa.me/38971942295?text="]')) {
+  failed.push('featured project marketing section translates and retains WhatsApp action in Albanian')
+} else console.log('PASS  featured project marketing section translates to Albanian')
 if (!albanianContent.includes('LYERJE MOTOÇIKLETASH DHE MAKINASH') || !albanianContent.includes('LLOGARITËSI I ÇMIMIT') || !albanianContent.includes('DETAJET E PROJEKTIT') || !albanianContent.includes('RIPARIM I PLASTIKËS') || !albanianContent.includes('SPEKTRI I NGJYRAVE')) {
   failed.push('Albanian translations cover service configurator and contact')
 } else console.log('PASS  Albanian translations cover service configurator and contact')
