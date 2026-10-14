@@ -52,6 +52,210 @@ const translations = {
   },
 }
 
+const configuratorCopy = {
+  mk: {
+    chooseService: 'ИЗБЕРИ ШТО ТИ ТРЕБА',
+    paintOption: 'Фарбање',
+    customStickersOption: 'Custom налепници',
+    makeShirtOption: 'Изработка на маици',
+    vehicleKindLabel: 'ТИП НА ВОЗИЛО',
+    repairPlastics: 'Поправка на пластики',
+    projectType: 'ТИП НА ВОЗИЛО',
+    motorcycle: 'Мотор',
+    car: 'Автомобил',
+    motorType: 'ТИП НА МОТОР',
+    scooter: 'Скутер',
+    sportbike: 'Спортски мотор',
+    largeBike: 'Поголем мотор / крузер',
+    otherBike: 'Друго',
+    otherVehicle: 'Опиши го возилото',
+    vehiclePlaceholder: 'Марка и модел',
+    paintFinish: 'ФИНИШ НА БОЈАТА',
+    paintColor: 'ИЗБЕРИ БОЈА',
+    paintSpectrum: 'СПЕКТАР НА БОИ',
+    colorCatalog: 'КАТАЛОГ НА БОИ',
+    customColor: 'Избери сопствена боја',
+    repairType: 'ШТО ТРЕБА ДА СЕ ПОПРАВИ?',
+    smallCrack: 'Пукнатина на пластика',
+    brokenMount: 'Скршен држач / носач',
+    scratches: 'Гребнатини и оштетена површина',
+    multipleDamage: 'Повеќе оштетувања',
+    stickerStudio: 'СТУДИО ЗА CUSTOM НАЛЕПНИЦИ',
+    openDesigner: 'ОТВОРИ ГО ДИЗАЈНЕРОТ',
+    closeDesigner: 'ЗАТВОРИ ГО ДИЗАЈНЕРОТ',
+    stickerText: 'ТЕКСТ НА НАЛЕПНИЦАТА',
+    stickerPlaceholder: 'ВНЕСИ ТЕКСТ',
+    stickerShape: 'ОБЛИК',
+    stickerRectangle: 'Правоаголник',
+    stickerCircle: 'Круг',
+    stickerOutline: 'Контурен исечок',
+    stickerSize: 'ГОЛЕМИНА',
+    stickerSmall: 'Мала · 5 cm',
+    stickerMedium: 'Средна · 10 cm',
+    stickerLarge: 'Голема · 20 cm',
+    stickerQuantity: 'БРОЈ НА НАЛЕПНИЦИ',
+    stickerFinish: 'МАТЕРИЈАЛ / ФИНИШ',
+    stickerPreview: 'ПРЕГЛЕД НА ДИЗАЈНОТ',
+    apparelType: 'ШТО ДА ИЗРАБОТИМЕ?',
+    tee: 'Премиум маица',
+    hoodie: 'Дуксер со капуљача',
+    crewneck: 'Блуза без капуљача',
+    units: 'КОЛИЧИНА',
+    customRequest: 'ДОДАТНИ ДЕТАЛИ (ИЗБОРНО)',
+    customPlaceholder: 'Кажи ни што треба да знаеме за проектот...',
+    quoteIncludes: 'Избрана услуга и детали ќе бидат вклучени во барањето.',
+    vehicleMotorcycle: 'Мотор',
+    vehicleCar: 'Автомобил',
+    serviceRepairOption: 'Поправка на пластики',
+    serviceRepairTitle: 'Поправка на пластики',
+    serviceRepairDesc: 'Поправуваме и обновуваме оштетени пластики без целосно фарбање.',
+    repairTag1: 'Пукнатини и гребнатини',
+    repairTag2: 'Држачи и носачи',
+    repairTag3: 'Подготовка и финиш',
+    colorIce: 'Ледено бела',
+    colorRaceRed: 'Тркачка црвена',
+    colorElectricBlue: 'Електрично сина',
+    colorDeepPurple: 'Темно виолетова',
+    colorAcidGreen: 'Ласер зелена',
+    colorGraphite: 'Графитна',
+    colorGold: 'Металик златна',
+  },
+  sq: {
+    chooseService: 'ZGJIDH SHËRBIMIN',
+    paintOption: 'Lyerje',
+    customStickersOption: 'Ngjitëse custom',
+    makeShirtOption: 'Prodhim bluzash',
+    vehicleKindLabel: 'LLOJI I AUTOMJETIT',
+    repairPlastics: 'Riparim i plastikës',
+    projectType: 'LLOJI I AUTOMJETIT',
+    motorcycle: 'Motoçikletë',
+    car: 'Makinë',
+    motorType: 'LLOJI I MOTOS',
+    scooter: 'Skuter',
+    sportbike: 'Moto sportive',
+    largeBike: 'Moto e madhe / cruiser',
+    otherBike: 'Tjetër',
+    otherVehicle: 'Përshkruaj automjetin',
+    vehiclePlaceholder: 'Marka dhe modeli',
+    paintFinish: 'PËRFUNDIMI I BOJËS',
+    paintColor: 'ZGJIDH NGJYRËN',
+    paintSpectrum: 'SPEKTRI I NGJYRAVE',
+    colorCatalog: 'KATALOGU I NGJYRAVE',
+    customColor: 'Zgjidh ngjyrë të personalizuar',
+    repairType: 'ÇFARË DUHET RIPARUAR?',
+    smallCrack: 'Plasaritje në plastikë',
+    brokenMount: 'Mbajtëse e thyer',
+    scratches: 'Gërvishtje dhe sipërfaqe e dëmtuar',
+    multipleDamage: 'Dëmtime të shumta',
+    stickerStudio: 'STUDIO PËR NGJITËSE CUSTOM',
+    openDesigner: 'HAP DIZAJNERIN',
+    closeDesigner: 'MBYLL DIZAJNERIN',
+    stickerText: 'TEKSTI I NGJITËSËS',
+    stickerPlaceholder: 'SHKRUAJ TEKSTIN',
+    stickerShape: 'FORMA',
+    stickerRectangle: 'Drejtkëndësh',
+    stickerCircle: 'Rreth',
+    stickerOutline: 'Prerje konturi',
+    stickerSize: 'MADHËSIA',
+    stickerSmall: 'E vogël · 5 cm',
+    stickerMedium: 'Mesatare · 10 cm',
+    stickerLarge: 'E madhe · 20 cm',
+    stickerQuantity: 'SASIA E NGJITËSEVE',
+    stickerFinish: 'MATERIALI / PËRFUNDIMI',
+    stickerPreview: 'PARAPAMJE E DIZAJNIT',
+    apparelType: 'ÇFARË TË PRODHOJMË?',
+    tee: 'Bluzë premium',
+    hoodie: 'Duks me kapuç',
+    crewneck: 'Bluzë pa kapuç',
+    units: 'SASIA',
+    customRequest: 'DETAJE SHTESË (OPSIONALE)',
+    customPlaceholder: 'Na trego çfarë duhet të dimë për projektin...',
+    quoteIncludes: 'Shërbimi dhe detajet e zgjedhura përfshihen në kërkesë.',
+    vehicleMotorcycle: 'Motoçikletë',
+    vehicleCar: 'Makinë',
+    serviceRepairOption: 'Riparim i plastikës',
+    serviceRepairTitle: 'Riparim i plastikës',
+    serviceRepairDesc: 'Riparojmë dhe rinovojmë plastikën e dëmtuar pa lyerje të plotë.',
+    repairTag1: 'Plasaritje dhe gërvishtje',
+    repairTag2: 'Mbajtëse dhe kapëse',
+    repairTag3: 'Përgatitje dhe përfundim',
+    colorIce: 'E bardhë akull',
+    colorRaceRed: 'E kuqe garash',
+    colorElectricBlue: 'Blu elektrike',
+    colorDeepPurple: 'Vjollcë e errët',
+    colorAcidGreen: 'Jeshile laser',
+    colorGraphite: 'Grafit',
+    colorGold: 'Ari metalik',
+  },
+  en: {
+    chooseService: 'CHOOSE YOUR SERVICE',
+    paintOption: 'Painting',
+    customStickersOption: 'Custom stickers',
+    makeShirtOption: 'Custom apparel',
+    vehicleKindLabel: 'VEHICLE TYPE',
+    repairPlastics: 'Plastic repair',
+    projectType: 'VEHICLE TYPE',
+    motorcycle: 'Motorcycle',
+    car: 'Car',
+    motorType: 'MOTORCYCLE TYPE',
+    scooter: 'Scooter',
+    sportbike: 'Sportbike',
+    largeBike: 'Large bike / cruiser',
+    otherBike: 'Other',
+    otherVehicle: 'Describe your vehicle',
+    vehiclePlaceholder: 'Make and model',
+    paintFinish: 'PAINT FINISH',
+    paintColor: 'CHOOSE A COLOR',
+    paintSpectrum: 'COLOR SPECTRUM',
+    colorCatalog: 'COLOR CATALOG',
+    customColor: 'Choose a custom color',
+    repairType: 'WHAT NEEDS REPAIR?',
+    smallCrack: 'Plastic crack',
+    brokenMount: 'Broken tab / mount',
+    scratches: 'Scratches and surface damage',
+    multipleDamage: 'Multiple damaged areas',
+    stickerStudio: 'CUSTOM STICKER STUDIO',
+    openDesigner: 'OPEN THE DESIGNER',
+    closeDesigner: 'CLOSE THE DESIGNER',
+    stickerText: 'STICKER TEXT',
+    stickerPlaceholder: 'ENTER YOUR TEXT',
+    stickerShape: 'SHAPE',
+    stickerRectangle: 'Rectangle',
+    stickerCircle: 'Circle',
+    stickerOutline: 'Contour cut',
+    stickerSize: 'SIZE',
+    stickerSmall: 'Small · 5 cm',
+    stickerMedium: 'Medium · 10 cm',
+    stickerLarge: 'Large · 20 cm',
+    stickerQuantity: 'STICKER QUANTITY',
+    stickerFinish: 'MATERIAL / FINISH',
+    stickerPreview: 'DESIGN PREVIEW',
+    apparelType: 'WHAT SHOULD WE MAKE?',
+    tee: 'Premium T-shirt',
+    hoodie: 'Hoodie',
+    crewneck: 'Crewneck sweatshirt',
+    units: 'QUANTITY',
+    customRequest: 'EXTRA DETAILS (OPTIONAL)',
+    customPlaceholder: 'Tell us anything else about your project...',
+    quoteIncludes: 'Your selected service and details will be included in the request.',
+    vehicleMotorcycle: 'Motorcycle',
+    vehicleCar: 'Car',
+    serviceRepairOption: 'Plastic repair',
+    serviceRepairTitle: 'Plastic repair',
+    serviceRepairDesc: 'Repair and restore damaged plastics without a full repaint.',
+    repairTag1: 'Cracks and scratches',
+    repairTag2: 'Tabs and mounts',
+    repairTag3: 'Preparation and finish',
+    colorIce: 'Ice white',
+    colorRaceRed: 'Racing red',
+    colorElectricBlue: 'Electric blue',
+    colorDeepPurple: 'Deep purple',
+    colorAcidGreen: 'Laser green',
+    colorGraphite: 'Graphite',
+    colorGold: 'Metallic gold',
+  },
+}
+
 const products = [
   { id: 'stage6', brand: 'STAGE6', nameKey: 'productStage6', category: 'performance', price: 9, image: 'photo-1558981806-ec527fa84c39', tone: 'orange' },
   { id: 'malossi', brand: 'MALOSSI', nameKey: 'productMalossi', category: 'performance', price: 12, image: 'photo-1558981403-c5f9899a28bc', tone: 'red' },
@@ -74,6 +278,7 @@ const services = [
   { number: '01', titleKey: 'servicePaint', descriptionKey: 'servicePaintDesc', tagKeys: ['paintTag1', 'paintTag2', 'paintTag3'], icon: '✳' },
   { number: '02', titleKey: 'serviceDecals', descriptionKey: 'serviceDecalsDesc', tagKeys: ['decalTag1', 'decalTag2', 'decalTag3'], icon: '↗' },
   { number: '03', titleKey: 'serviceApparel', descriptionKey: 'serviceApparelDesc', tagKeys: ['apparelTag1', 'apparelTag2', 'apparelTag3'], icon: '▤' },
+  { number: '04', titleKey: 'serviceRepairTitle', descriptionKey: 'serviceRepairDesc', tagKeys: ['repairTag1', 'repairTag2', 'repairTag3'], icon: '⌁' },
 ]
 
 const gallery = [
@@ -141,7 +346,7 @@ function IntroStrip({ t }) {
 
 function Services({ t }) {
   return <section className="section services-section" id="services"><div className="section-heading"><div><p className="eyebrow section-eyebrow">{t('servicesEyebrow')}</p><h2>{t('servicesTitle')}<br /><span>{t('servicesAccent')}</span></h2></div><p className="section-intro">{t('servicesIntro')}</p></div>
-    <div className="services-grid">{services.map(service => <article className="service-card" key={service.number}><div className="service-top"><span>{service.number} / 03</span><span className="service-symbol">{service.icon}</span></div><h3>{t(service.titleKey)}</h3><p>{t(service.descriptionKey)}</p><ul>{service.tagKeys.map(key => <li key={key}>{t(key)}</li>)}</ul><a href="#quote" className="text-link">{t('startProject')} <span>↗</span></a></article>)}</div></section>
+    <div className="services-grid">{services.map(service => <article className="service-card" key={service.number}><div className="service-top"><span>{service.number} / {String(services.length).padStart(2, '0')}</span><span className="service-symbol">{service.icon}</span></div><h3>{t(service.titleKey)}</h3><p>{t(service.descriptionKey)}</p><ul>{service.tagKeys.map(key => <li key={key}>{t(key)}</li>)}</ul><a href="#quote" className="text-link">{t('startProject')} <span>↗</span></a></article>)}</div></section>
 }
 
 function TrustSection({ t }) {
@@ -191,21 +396,146 @@ function MerchSection({ onAdd, t, currency, lang }) {
     <div className="merch-endnote"><span>{t('merchEnd1')}</span><span>{t('merchEnd2')} <b>↗</b></span></div></section>
 }
 
+function hslToHex(hue, saturation, lightness) {
+  const chroma = (1 - Math.abs(2 * lightness - 1)) * saturation
+  const hueSegment = hue / 60
+  const x = chroma * (1 - Math.abs((hueSegment % 2) - 1))
+  const [red, green, blue] = hueSegment < 1 ? [chroma, x, 0]
+    : hueSegment < 2 ? [x, chroma, 0]
+      : hueSegment < 3 ? [0, chroma, x]
+        : hueSegment < 4 ? [0, x, chroma]
+          : hueSegment < 5 ? [x, 0, chroma]
+            : [chroma, 0, x]
+  const offset = lightness - chroma / 2
+  return `#${[red, green, blue].map(channel => Math.round((channel + offset) * 255).toString(16).padStart(2, '0')).join('')}`
+}
+
+function hexToHue(hex) {
+  const channels = hex.match(/^#([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i)
+  if (!channels) return 184
+  const [red, green, blue] = channels.slice(1).map(channel => parseInt(channel, 16) / 255)
+  const max = Math.max(red, green, blue)
+  const min = Math.min(red, green, blue)
+  const delta = max - min
+  if (delta === 0) return 0
+  const hue = max === red ? ((green - blue) / delta) % 6
+    : max === green ? (blue - red) / delta + 2
+      : (red - green) / delta + 4
+  return Math.round((hue * 60 + 360) % 360)
+}
+
 function QuoteCalculator({ t, currency, lang }) {
   const [service, setService] = useState('paint')
   const [vehicle, setVehicle] = useState('motorcycle')
+  const [motorType, setMotorType] = useState('scooter')
   const [finish, setFinish] = useState('metallic')
-  const finishesForService = service === 'paint' ? ['standardPaint', 'metallic', 'chameleon'] : ['standardVinyl', 'reflectiveVinyl', 'customGraphics']
-  const base = { paint: { motorcycle: 500, car: 1450 }, decals: { motorcycle: 95, car: 260 } }
-  const extras = { standardPaint: 0, metallic: 140, chameleon: 290, standardVinyl: 0, reflectiveVinyl: 45, customGraphics: 85 }
-  const low = base[service][vehicle] + extras[finish]
-  const high = low + Math.round(low * .38)
+  const [paintHex, setPaintHex] = useState('#00f0ff')
+  const [spectrumHue, setSpectrumHue] = useState(184)
+  const [repairType, setRepairType] = useState('smallCrack')
+  const [apparelType, setApparelType] = useState('tee')
+  const [apparelColor, setApparelColor] = useState('matteBlack')
+  const [apparelSize, setApparelSize] = useState('L')
+  const [apparelPlacement, setApparelPlacement] = useState('chest')
+  const [apparelText, setApparelText] = useState('')
+  const [stickerOpen, setStickerOpen] = useState(true)
+  const [stickerText, setStickerText] = useState('SPECTRA')
+  const [stickerShape, setStickerShape] = useState('stickerRectangle')
+  const [stickerSize, setStickerSize] = useState('medium')
+  const [stickerQuantity, setStickerQuantity] = useState(1)
+  const [requestDetails, setRequestDetails] = useState('')
+  const [otherVehicle, setOtherVehicle] = useState('')
+  const [stickerFile, setStickerFile] = useState('')
+  const finishesForService = service === 'paint'
+    ? ['standardPaint', 'metallic', 'chameleon']
+    : ['standardVinyl', 'reflectiveVinyl', 'customGraphics']
+  const paintColors = [
+    { key: 'colorIce', hex: '#f1f4f5' },
+    { key: 'colorRaceRed', hex: '#dc2637' },
+    { key: 'colorElectricBlue', hex: '#00a9ff' },
+    { key: 'colorDeepPurple', hex: '#7024d8' },
+    { key: 'colorAcidGreen', hex: '#c7ff00' },
+    { key: 'colorGraphite', hex: '#34383d' },
+    { key: 'colorGold', hex: '#d4a438' },
+  ]
+  const serviceName = {
+    paint: t('paintOption'),
+    decals: t('customStickersOption'),
+    apparel: t('makeShirtOption'),
+    repair: t('serviceRepairOption'),
+  }[service]
+  const vehicleName = vehicle === 'motorcycle'
+    ? `${t('motorcycle')} — ${t(motorType)}${motorType === 'otherBike' && otherVehicle ? ` (${otherVehicle})` : ''}`
+    : t('car')
+  const stickerSizes = { small: 12, medium: 25, large: 45 }
+  const stickerCount = Math.max(1, Math.min(100, Number(stickerQuantity) || 1))
+  const garmentPrices = { tee: 45, hoodie: 79, crewneck: 65 }
+  let low
+  if (service === 'paint') {
+    const motorcyclePrices = { scooter: 320, sportbike: 580, largeBike: 720, otherBike: 500 }
+    low = vehicle === 'car' ? 1450 : motorcyclePrices[motorType]
+    low += { standardPaint: 0, metallic: 140, chameleon: 290 }[finish]
+  } else if (service === 'repair') {
+    low = { smallCrack: 45, brokenMount: 55, scratches: 70, multipleDamage: 130 }[repairType]
+    if (vehicle === 'car') low = Math.round(low * 1.5)
+  } else if (service === 'decals') {
+    low = (stickerSizes[stickerSize] + { standardVinyl: 0, reflectiveVinyl: 4, customGraphics: 7 }[finish]) * stickerCount
+  } else {
+    low = garmentPrices[apparelType] * stickerCount
+  }
+  const high = low + Math.max(10, Math.round(low * .38))
   const range = `${priceText(low, currency, lang)} — ${priceText(high, currency, lang)}`
-  const message = encodeURIComponent(`${t('estimateMessage')} ${t(service)} ${t('for')} ${t(vehicle)}, ${t('withFinish')} ${t(finish)}. ${t('estimateIs')} ${range}.`)
+  const details = [
+    `${t('service')}: ${serviceName}`,
+    service === 'paint' || service === 'repair' || service === 'decals' ? `${t('vehicle')}: ${vehicleName}` : '',
+    service === 'paint' ? `${t('paintFinish')}: ${t(finish)}; ${t('paintColor')}: ${paintHex}` : '',
+    service === 'repair' ? `${t('repairType')}: ${t(repairType)}` : '',
+    service === 'decals' ? `${t('stickerText')}: "${stickerText || t('stickerPlaceholder')}"; ${t('stickerShape')}: ${t(stickerShape)}; ${t('stickerSize')}: ${t(`sticker${stickerSize[0].toUpperCase()}${stickerSize.slice(1)}`)}; ${t('stickerQuantity')}: ${stickerCount}; ${t('stickerFinish')}: ${t(finish)}; #${paintHex.replace('#', '')}${stickerFile ? `; ${stickerFile}` : ''}` : '',
+    service === 'apparel' ? `${t('apparelType')}: ${t(apparelType)}; ${t('color')}: ${t(apparelColor)}; ${t('size')}: ${apparelSize}; ${t('placement')}: ${t(apparelPlacement)}; ${apparelText.trim() ? `${t('personalize')}: ${apparelText.trim()}; ` : ''}${t('units')}: ${stickerCount}` : '',
+    requestDetails.trim() ? `${t('customRequest')}: ${requestDetails.trim()}` : '',
+    `${t('estimateIs')} ${range}`,
+  ].filter(Boolean)
+  const message = encodeURIComponent(`${t('estimateMessage')}\n${details.join('\n')}`)
   const email = `mailto:?subject=${encodeURIComponent(t('estimateSubject'))}&body=${message}`
   return <section className="section quote-section" id="quote"><div className="quote-grid"><div className="quote-copy"><p className="eyebrow section-eyebrow">{t('quoteEyebrow')}</p><h2>{t('quoteTitle')}<br /><span>{t('quoteAccent')}</span></h2><p>{t('quoteDescription')}</p><div className="quote-note"><span>↳</span> {t('estimateNote')}</div></div>
-    <div className="calculator"><div className="calculator-top"><span>{t('calculator')}</span><span>01 — 03</span></div><label className="calc-label">{t('service')}<select value={service} onChange={event => { const next = event.target.value; setService(next); setFinish(next === 'paint' ? 'metallic' : 'standardVinyl') }}><option value="paint">{t('paint')}</option><option value="decals">{t('decals')}</option></select></label><label className="calc-label">{t('vehicle')}<select value={vehicle} onChange={event => setVehicle(event.target.value)}><option value="motorcycle">{t('motorcycle')}</option><option value="car">{t('car')}</option></select></label><label className="calc-label">{t('material')}<select value={finish} onChange={event => setFinish(event.target.value)}>{finishesForService.map(key => <option value={key} key={key}>{t(key)}</option>)}</select></label>
-      <div className="estimate"><span>{t('estimatedRange')}</span><strong>{range}</strong><small>{t('finalPriceNote')}</small></div><a className="button button-lime quote-submit" href={`https://wa.me/?text=${message}`} target="_blank" rel="noreferrer">{t('requestWhatsApp')} <span>↗</span></a><a className="quote-email" href={email}>{t('requestEmail')} ↗</a></div>
+    <div className="calculator"><div className="calculator-top"><span>{t('calculator')}</span><span>01 — 04</span></div>
+      <label className="calc-label">{t('chooseService')}<select value={service} onChange={event => { const next = event.target.value; setService(next); setFinish(next === 'paint' ? 'metallic' : 'standardVinyl'); setStickerOpen(next === 'decals') }}>
+        <option value="paint">{t('paintOption')}</option><option value="decals">{t('customStickersOption')}</option><option value="apparel">{t('makeShirtOption')}</option><option value="repair">{t('serviceRepairOption')}</option>
+      </select></label>
+      {(service === 'paint' || service === 'repair' || service === 'decals') && <label className="calc-label">{t('vehicleKindLabel')}<select value={vehicle} onChange={event => setVehicle(event.target.value)}><option value="motorcycle">{t('motorcycle')}</option><option value="car">{t('car')}</option></select></label>}
+      {(service === 'paint' || service === 'repair') && vehicle === 'motorcycle' && <label className="calc-label">{t('motorType')}<select value={motorType} onChange={event => setMotorType(event.target.value)}><option value="scooter">{t('scooter')}</option><option value="sportbike">{t('sportbike')}</option><option value="largeBike">{t('largeBike')}</option><option value="otherBike">{t('otherBike')}</option></select></label>}
+      {motorType === 'otherBike' && vehicle === 'motorcycle' && (service === 'paint' || service === 'repair') && <label className="calc-label">{t('otherVehicle')}<input value={otherVehicle} onChange={event => setOtherVehicle(event.target.value)} placeholder={t('vehiclePlaceholder')} maxLength={60} /></label>}
+      {service === 'paint' && <>
+        <label className="calc-label">{t('paintFinish')}<select value={finish} onChange={event => setFinish(event.target.value)}>{finishesForService.map(key => <option value={key} key={key}>{t(key)}</option>)}</select></label>
+        <div className="paint-color-panel"><span className="config-label">{t('colorCatalog')}</span><div className="paint-swatches">{paintColors.map(color => <button key={color.key} type="button" className={paintHex === color.hex ? 'selected' : ''} title={t(color.key)} aria-label={t(color.key)} aria-pressed={paintHex === color.hex} style={{ '--paint-swatch': color.hex }} onClick={() => { setPaintHex(color.hex); setSpectrumHue(hexToHue(color.hex)) }} />)}</div>
+          <label className="spectrum-control">{t('paintSpectrum')}<input type="range" min="0" max="360" value={spectrumHue} onChange={event => { const hue = Number(event.target.value); setSpectrumHue(hue); setPaintHex(hslToHex(hue, 1, .5)) }} /></label>
+          <label className="custom-color-control">{t('customColor')}<input type="color" value={paintHex.startsWith('#') ? paintHex : '#00f0ff'} onChange={event => { setPaintHex(event.target.value); setSpectrumHue(hexToHue(event.target.value)) }} /><output style={{ color: paintHex }}>{paintHex.toUpperCase()}</output></label>
+        </div>
+      </>}
+      {service === 'repair' && <label className="calc-label">{t('repairType')}<select value={repairType} onChange={event => setRepairType(event.target.value)}><option value="smallCrack">{t('smallCrack')}</option><option value="brokenMount">{t('brokenMount')}</option><option value="scratches">{t('scratches')}</option><option value="multipleDamage">{t('multipleDamage')}</option></select></label>}
+      {service === 'decals' && <div className="sticker-designer">
+        <button className="designer-toggle" type="button" aria-expanded={stickerOpen} onClick={() => setStickerOpen(open => !open)}><span>{t('stickerStudio')}</span><b>{stickerOpen ? t('closeDesigner') : t('openDesigner')} {stickerOpen ? '−' : '+'}</b></button>
+        {stickerOpen && <div className="designer-body">
+          <label className="calc-label">{t('stickerText')}<input value={stickerText} onChange={event => setStickerText(event.target.value.slice(0, 24))} placeholder={t('stickerPlaceholder')} maxLength={24} /></label>
+          <div className="sticker-preview-wrap"><span>{t('stickerPreview')}</span><div className={`sticker-live-preview shape-${stickerShape}`} style={{ '--sticker-color': paintHex }}>{stickerText || t('stickerPlaceholder')}</div></div>
+          <div className="designer-controls"><label className="calc-label">{t('stickerShape')}<select value={stickerShape} onChange={event => setStickerShape(event.target.value)}><option value="stickerRectangle">{t('stickerRectangle')}</option><option value="stickerCircle">{t('stickerCircle')}</option><option value="stickerOutline">{t('stickerOutline')}</option></select></label>
+            <label className="calc-label">{t('stickerSize')}<select value={stickerSize} onChange={event => setStickerSize(event.target.value)}><option value="small">{t('stickerSmall')}</option><option value="medium">{t('stickerMedium')}</option><option value="large">{t('stickerLarge')}</option></select></label></div>
+          <div className="designer-controls"><label className="calc-label">{t('stickerFinish')}<select value={finish} onChange={event => setFinish(event.target.value)}>{finishesForService.map(key => <option key={key} value={key}>{t(key)}</option>)}</select></label>
+            <label className="calc-label">{t('stickerQuantity')}<input type="number" min="1" max="100" value={stickerQuantity} onChange={event => setStickerQuantity(event.target.value)} /></label></div>
+          <label className="calc-label sticker-color-input">{t('paintColor')}<input type="color" value={paintHex.startsWith('#') ? paintHex : '#00f0ff'} onChange={event => { setPaintHex(event.target.value); setSpectrumHue(hexToHue(event.target.value)) }} /></label>
+          <label className="calc-label">{t('referencePhoto')}<input type="file" accept="image/*,.pdf,.svg" onChange={event => setStickerFile(event.target.files?.[0]?.name ?? '')} /></label>
+        </div>}
+      </div>}
+      {service === 'apparel' && <>
+        <label className="calc-label">{t('apparelType')}<select value={apparelType} onChange={event => setApparelType(event.target.value)}><option value="tee">{t('tee')}</option><option value="hoodie">{t('hoodie')}</option><option value="crewneck">{t('crewneck')}</option></select></label>
+        <div className="quote-apparel-options">
+          <div className="colorway-picker"><span>{t('color')} / {t(apparelColor).toUpperCase()}</span><div>{colorways.map(option => <button key={option.key} type="button" title={t(option.key)} aria-label={t(option.key)} aria-pressed={apparelColor === option.key} className={apparelColor === option.key ? 'selected' : ''} style={{ '--swatch': option.value }} onClick={() => setApparelColor(option.key)} />)}</div></div>
+          <div className="designer-controls"><label className="calc-label">{t('size')}<select value={apparelSize} onChange={event => setApparelSize(event.target.value)}>{['S', 'M', 'L', 'XL', 'XXL'].map(size => <option key={size}>{size}</option>)}</select></label><label className="calc-label">{t('placement')}<select value={apparelPlacement} onChange={event => setApparelPlacement(event.target.value)}>{placements.map(key => <option key={key} value={key}>{t(key)}</option>)}</select></label></div>
+        </div>
+        <label className="calc-label">{t('personalize')}<input value={apparelText} onChange={event => setApparelText(event.target.value.slice(0, 14))} placeholder={t('textPlaceholder')} maxLength={14} /></label>
+        <label className="calc-label">{t('units')}<input type="number" min="1" max="100" value={stickerQuantity} onChange={event => setStickerQuantity(Math.max(1, Math.min(100, Number(event.target.value) || 1)))} /></label>
+      </>}
+      <label className="calc-label">{t('customRequest')}<textarea rows="2" maxLength="500" value={requestDetails} onChange={event => setRequestDetails(event.target.value)} placeholder={t('customPlaceholder')} /></label>
+      <div className="estimate"><span>{t('estimatedRange')}</span><strong>{range}</strong><small>{t('finalPriceNote')}</small></div><a className="button button-lime quote-submit" href={`https://wa.me/?text=${message}`} target="_blank" rel="noreferrer">{t('requestWhatsApp')} <span>↗</span></a><a className="quote-email" href={email}>{t('requestEmail')} ↗</a><p className="quote-includes">{t('quoteIncludes')}</p></div>
   </div></section>
 }
 
@@ -231,7 +561,7 @@ function Contact({ t, lang }) {
   }
   return <section className="section contact-section" id="contact"><div className="contact-copy"><p className="eyebrow section-eyebrow">{t('contactEyebrow')}</p><h2>{t('contactTitle')}<br /><span>{t('contactAccent')}</span></h2><p>{t('contactDescription')}</p><div className="contact-direct"><a href={`https://wa.me/?text=${encodeURIComponent(t('directChat'))}`} target="_blank" rel="noreferrer"><span>↗</span> {t('whatsappUs')}</a><a href="https://instagram.com/spectra.ku" target="_blank" rel="noreferrer"><span>↗</span> @SPECTRA.KU</a></div></div>
     <form className="contact-form" onSubmit={submit}><div className="form-row"><label>{t('yourName')}<input name="name" required placeholder={t('namePlaceholder')} /></label><label>{t('phone')}<input name="contact" required placeholder={t('phonePlaceholder')} /></label></div>
-      <label>{t('projectType')}<select name="project"><option>{t('projectMotor')}</option><option>{t('projectCar')}</option><option>{t('projectDecals')}</option><option>{t('projectApparel')}</option><option>{t('projectOther')}</option></select></label>
+      <label>{t('projectType')}<select name="project"><option>{t('projectMotor')}</option><option>{t('projectCar')}</option><option>{t('customStickersOption')}</option><option>{t('projectApparel')}</option><option>{t('serviceRepairOption')}</option><option>{t('projectOther')}</option></select></label>
       <label>{t('details')}<textarea name="details" required rows="4" placeholder={t('detailsPlaceholder')} /></label>
       <label className="upload-field">{t('referencePhoto')}<input name="reference" type="file" accept="image/*" /><span>＋ &nbsp; {t('attach')}</span></label>
       <button className="button button-lime" type="submit">{sent ? t('openWhatsApp') : t('submitProject')} <span>↗</span></button><small>{t('privacy')}</small></form>
@@ -262,13 +592,21 @@ export default function App() {
   const [currency, setCurrency] = useState('EUR')
   const [cart, setCart] = useState([])
   const [cartOpen, setCartOpen] = useState(false)
-  const t = key => translations[lang][key] ?? translations.en[key] ?? key
+  const [quoteVisible, setQuoteVisible] = useState(false)
+  const t = key => translations[lang][key] ?? configuratorCopy[lang]?.[key] ?? translations.en[key] ?? configuratorCopy.en[key] ?? key
   useEffect(() => {
     document.documentElement.lang = lang
     document.title = t('documentTitle')
     const description = document.querySelector('meta[name="description"]')
     if (description) description.content = t('metaDescription')
   }, [lang])
+  useEffect(() => {
+    const quoteSection = document.getElementById('quote')
+    if (!quoteSection || typeof IntersectionObserver === 'undefined') return undefined
+    const observer = new IntersectionObserver(([entry]) => setQuoteVisible(entry.isIntersecting), { threshold: 0.08 })
+    observer.observe(quoteSection)
+    return () => observer.disconnect()
+  }, [])
   const count = cart.reduce((sum, item) => sum + item.quantity, 0)
   function addToCart(product, openCart = false) {
     setCart(current => {
@@ -281,5 +619,5 @@ export default function App() {
     setCart(current => current.map(item => item.key === key ? { ...item, quantity: item.quantity + delta } : item).filter(item => item.quantity > 0))
   }
   const localeProps = { lang, currency, t }
-  return <div className="page"><Header cartCount={count} onCart={() => setCartOpen(true)} onLanguage={setLang} onCurrency={setCurrency} {...localeProps} /><main><Hero t={t} /><IntroStrip t={t} /><Services t={t} /><TrustSection t={t} /><Shop onAdd={addToCart} {...localeProps} /><MerchSection onAdd={product => addToCart(product, true)} {...localeProps} /><QuoteCalculator {...localeProps} /><Portfolio t={t} /><Contact t={t} lang={lang} /></main><Footer t={t} /><a className="mobile-sticky-quote" href="#quote">{t('quoteCta')} <span>↗</span></a>{cartOpen && <CartDrawer cart={cart} onClose={() => setCartOpen(false)} onChange={changeQuantity} {...localeProps} />}</div>
+  return <div className="page"><Header cartCount={count} onCart={() => setCartOpen(true)} onLanguage={setLang} onCurrency={setCurrency} {...localeProps} /><main><Hero t={t} /><IntroStrip t={t} /><Services t={t} /><TrustSection t={t} /><Shop onAdd={addToCart} {...localeProps} /><MerchSection onAdd={product => addToCart(product, true)} {...localeProps} /><QuoteCalculator {...localeProps} /><Portfolio t={t} /><Contact t={t} lang={lang} /></main><Footer t={t} /><a className={`mobile-sticky-quote${quoteVisible ? ' is-hidden' : ''}`} href="#quote" aria-hidden={quoteVisible} tabIndex={quoteVisible ? -1 : 0}>{t('quoteCta')} <span>↗</span></a>{cartOpen && <CartDrawer cart={cart} onClose={() => setCartOpen(false)} onChange={changeQuantity} {...localeProps} />}</div>
 }

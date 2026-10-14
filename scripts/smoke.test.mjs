@@ -93,6 +93,8 @@ const checks = [
   ['print placement selector', /ПОЗИЦИЈА НА ПЕЧАТОТ/],
   ['quote estimator', /КАЛКУЛАТОР ЗА ЦЕНА/],
   ['quote service choice', /Персонализирани декали/],
+  ['plastic repair service', /Поправка на пластики/],
+  ['four selectable quote services', /Изработка на маици/],
   ['email quote option', /ИСПРАТИ ГО БАРАЊЕТО ПО Е-ПОШТА/],
   ['studio trust element', /ОД ИДЕЈА ДО ФИНАЛНА ИЗРАБОТКА/],
   ['WhatsApp direct contact', /ПИШИ НИ ДИРЕКТНО/],
@@ -116,6 +118,54 @@ if (failed.length) {
   process.exit(1)
 }
 
+async function selectValue(select, value) {
+  Object.defineProperty(select, 'value', { configurable: true, get: () => value })
+  select.dispatchEvent(new window.Event('change', { bubbles: true }))
+  await new Promise(resolve => setTimeout(resolve, 30))
+}
+
+const serviceSelect = container.querySelector('.calculator .calc-label select')
+await selectValue(serviceSelect, 'decals')
+if (!container.querySelector('.sticker-designer') || !container.querySelector('.sticker-live-preview')) {
+  failed.push('custom sticker designer opens for decal service')
+} else console.log('PASS  custom sticker designer opens for decal service')
+
+if (!container.querySelector('.sticker-live-preview')?.textContent.includes('SPECTRA') ||
+    !decodeURIComponent(container.querySelector('.quote-submit')?.getAttribute('href') ?? '').includes('"SPECTRA"')) {
+  failed.push('sticker preview and WhatsApp request include the design')
+} else console.log('PASS  sticker preview and WhatsApp request include the design')
+
+const designerToggle = container.querySelector('.designer-toggle')
+designerToggle?.click()
+await new Promise(resolve => setTimeout(resolve, 30))
+if (container.querySelector('.designer-body')) failed.push('custom sticker designer can be collapsed')
+else console.log('PASS  custom sticker designer can be collapsed')
+container.querySelector('.designer-toggle')?.click()
+
+await selectValue(serviceSelect, 'paint')
+const scooterEstimate = container.querySelector('.estimate strong')?.textContent
+const paintSelects = container.querySelectorAll('.calculator .calc-label select')
+await selectValue(paintSelects[2], 'sportbike')
+if (scooterEstimate === container.querySelector('.estimate strong')?.textContent) {
+  failed.push('motorcycle type updates painting estimate')
+} else console.log('PASS  motorcycle type updates painting estimate')
+if (container.querySelectorAll('.paint-swatches button').length < 7 || !container.querySelector('.spectrum-control input[type="range"]')) {
+  failed.push('paint color catalog and spectrum controls render')
+} else console.log('PASS  paint color catalog and spectrum controls render')
+
+await selectValue(serviceSelect, 'repair')
+if (!container.textContent.includes('Скршен држач / носач')) {
+  failed.push('plastic repair service exposes damage options')
+} else console.log('PASS  plastic repair service exposes damage options')
+
+await selectValue(serviceSelect, 'apparel')
+if (!container.textContent.includes('Премиум маица') || !container.textContent.includes('КОЛИЧИНА') ||
+    !container.querySelector('.quote-apparel-options') || !container.querySelector('.calculator input[placeholder="SPECTRA"]')) {
+  failed.push('custom apparel service exposes garment and personalization choices')
+} else console.log('PASS  custom apparel service exposes garment and personalization choices')
+
+await selectValue(serviceSelect, 'paint')
+
 const languageButtons = container.querySelectorAll('.header-actions .locale-group:first-child button')
 const currencyButtons = container.querySelectorAll('.header-actions .currency-group button')
 languageButtons[2].click()
@@ -124,9 +174,9 @@ if (document.documentElement.lang !== 'en' || !container.innerHTML.includes('DES
   failed.push('English switcher updates page language')
 } else console.log('PASS  English switcher updates page language')
 const englishContent = container.textContent.toLocaleUpperCase()
-if (!englishContent.includes('MOTORCYCLE & CAR PAINTING') || !englishContent.includes('PREMIUM HEAVYWEIGHT TEE') || !englishContent.includes('PRICE ESTIMATOR') || !englishContent.includes('PROJECT DETAILS')) {
-  failed.push('English translations cover services, merch, estimator and contact')
-} else console.log('PASS  English translations cover services, merch, estimator and contact')
+if (!englishContent.includes('MOTORCYCLE & CAR PAINTING') || !englishContent.includes('PREMIUM HEAVYWEIGHT TEE') || !englishContent.includes('PRICE ESTIMATOR') || !englishContent.includes('PROJECT DETAILS') || !englishContent.includes('PLASTIC REPAIR') || !englishContent.includes('COLOR SPECTRUM')) {
+  failed.push('English translations cover service configurator and contact')
+} else console.log('PASS  English translations cover service configurator and contact')
 
 languageButtons[1].click()
 await new Promise((r) => setTimeout(r, 30))
@@ -134,9 +184,9 @@ if (document.documentElement.lang !== 'sq' || !container.innerHTML.includes('MER
   failed.push('Albanian switcher updates page language')
 } else console.log('PASS  Albanian switcher updates page language')
 const albanianContent = container.textContent.toLocaleUpperCase()
-if (!albanianContent.includes('LYERJE MOTOÇIKLETASH DHE MAKINASH') || !albanianContent.includes('LLOGARITËSI I ÇMIMIT') || !albanianContent.includes('DETAJET E PROJEKTIT')) {
-  failed.push('Albanian translations cover services, estimator and contact')
-} else console.log('PASS  Albanian translations cover services, estimator and contact')
+if (!albanianContent.includes('LYERJE MOTOÇIKLETASH DHE MAKINASH') || !albanianContent.includes('LLOGARITËSI I ÇMIMIT') || !albanianContent.includes('DETAJET E PROJEKTIT') || !albanianContent.includes('RIPARIM I PLASTIKËS') || !albanianContent.includes('SPEKTRI I NGJYRAVE')) {
+  failed.push('Albanian translations cover service configurator and contact')
+} else console.log('PASS  Albanian translations cover service configurator and contact')
 
 languageButtons[0].click()
 currencyButtons[1].click()
