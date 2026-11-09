@@ -2,8 +2,8 @@ import { useEffect, useMemo, useState } from 'react'
 import { getSupabaseClient, isSupabaseConfigured } from './lib/supabase.js'
 
 const WHATSAPP_NUMBER = '38971942295'
-const MKD_PER_EUR = 61.5
-const euroPriceFromDenars = amount => Math.round((amount / MKD_PER_EUR) * 100) / 100
+const INSTAGRAM_URL = 'https://instagram.com/spectra.ku'
+const INSTAGRAM_MESSAGE_URL = 'https://ig.me/m/spectra.ku'
 const languageNames = { mk: 'МК', sq: 'AL', en: 'EN' }
 const themes = [
   { id: 'lilac', color: '#b9a5ff' },
@@ -411,19 +411,112 @@ const configuratorCopy = {
   },
 }
 
+const salesCopy = {
+  mk: {
+    metaDescription: 'Spectracustoms — фарбање мотори и автомобили, персонализирани декали и облека по мерка. Цените се договараат преку телефон, WhatsApp или Instagram.',
+    shopDescription: 'Избери налепници и детали за твојот стил. За достапност, изработка и цена пиши ни директно.',
+    add: 'ДОДАДИ ВО БАРАЊЕ',
+    addQuick: 'ДОДАДИ ВО БАРАЊЕ',
+    cart: 'Барање',
+    cartTitle: 'ИЗБРАНИ ПРОИЗВОДИ',
+    yourSelection: 'ТВОЕТО БАРАЊЕ',
+    emptyCart: 'Сè уште немаш избрано производи.',
+    findStickers: 'РАЗГЛЕДАЈ НАЛЕПНИЦИ',
+    studioUniform: 'СПЕКТРА КОЛЕКЦИЈА / ТОМ 01',
+    madeToOrder: '3 МОДЕЛИ · ИЗРАБОТКА ПО НАРАЧКА',
+    quoteDescription: 'Опиши ни го проектот и избери ги потребните детали. Ќе разговараме директно за идејата и цената.',
+    estimateNote: 'ЦЕНАТА СЕ ДОГОВАРА СПОРЕД ПРОЕКТОТ И ПОТРЕБНИТЕ МАТЕРИЈАЛИ.',
+    calculator: 'ПОДГОТВИ БАРАЊЕ',
+    estimatedRange: 'ЦЕНА',
+    priceByAgreement: 'ПО ДОГОВОР',
+    finalPriceNote: 'За понуда и рок за изработка, контактирај нè директно.',
+    estimateMessage: 'Здраво Spectracustoms! Сакам понуда за следниов проект:',
+    requestWhatsApp: 'ПИШИ НИ НА WHATSAPP',
+    requestInstagram: 'ПИШИ НИ НА INSTAGRAM',
+    orderWhatsApp: 'ПРАТИ БАРАЊЕ ПРЕКУ WHATSAPP',
+    orderMessage: 'Здраво Spectracustoms! Сакам понуда за:',
+    contactDescription: 'Имаш идеја за мотор, автомобил, налепници или облека? Јави се или пиши ни — цената и деталите ги договараме директно.',
+    spotlightImageAlt: 'Aprilia RSV4 со персонализирани црвени и црни декали',
+    spotlightWhatsAppMessage: 'Здраво Spectracustoms! Видов го вашиот Aprilia RSV4 проект и сакам да прашам за мој проект.',
+    galleryApriliaSideTitle: 'APRILIA RSV4 / ЦЕЛ МОТОР',
+    galleryApriliaDetailTitle: 'ДЕТАЛИ / RSV4 FACTORY',
+    galleryApriliaNightTitle: 'APRILIA RSV4 / НОЌНО ВОЗЕЊЕ',
+  },
+  sq: {
+    metaDescription: 'Spectracustoms — lyerje motoçikletash dhe makinash, ngjitëse të personalizuara dhe veshje me porosi. Çmimet caktohen me marrëveshje përmes telefonit, WhatsApp ose Instagram.',
+    shopDescription: 'Zgjidh ngjitëse dhe detaje sipas stilit tënd. Na shkruaj për disponueshmërinë, prodhimin dhe çmimin.',
+    add: 'SHTO NË KËRKESË',
+    addQuick: 'SHTO NË KËRKESË',
+    cart: 'Kërkesa',
+    cartTitle: 'PRODUKTET E ZGJEDHURA',
+    yourSelection: 'KËRKESA JOTE',
+    emptyCart: 'Nuk ke zgjedhur ende produkte.',
+    findStickers: 'SHIKO NGJITËSET',
+    studioUniform: 'KOLEKSIONI SPECTRA / VËLL. 01',
+    madeToOrder: '3 MODELE · PUNOHEN SIPAS POROSISË',
+    quoteDescription: 'Përshkruaj projektin dhe zgjidh detajet e nevojshme. Do të flasim drejtpërdrejt për idenë dhe çmimin.',
+    estimateNote: 'ÇMIMI CAKTOHET SIPAS PROJEKTIT DHE MATERIALEVE TË NEVOJSHME.',
+    calculator: 'PËRGATIT KËRKESËN',
+    estimatedRange: 'ÇMIMI',
+    priceByAgreement: 'ME MARRËVESHJE',
+    finalPriceNote: 'Na kontakto drejtpërdrejt për ofertë dhe afatin e punimit.',
+    estimateMessage: 'Përshëndetje Spectracustoms! Dua një ofertë për projektin:',
+    requestWhatsApp: 'NA SHKRUAJ NË WHATSAPP',
+    requestInstagram: 'NA SHKRUAJ NË INSTAGRAM',
+    orderWhatsApp: 'DËRGO KËRKESËN NË WHATSAPP',
+    orderMessage: 'Përshëndetje Spectracustoms! Dua ofertë për:',
+    contactDescription: 'Ke një ide për motoçikletë, makinë, ngjitëse ose veshje? Na telefono ose shkruaj — çmimin dhe detajet i caktojmë drejtpërdrejt.',
+    spotlightImageAlt: 'Aprilia RSV4 me ngjitëse të personalizuara kuqezi',
+    spotlightWhatsAppMessage: 'Përshëndetje Spectracustoms! Pashë projektin tuaj Aprilia RSV4 dhe dua të pyes për projektin tim.',
+    galleryApriliaSideTitle: 'APRILIA RSV4 / PAMJE ANËSORE',
+    galleryApriliaDetailTitle: 'DETAJE / RSV4 FACTORY',
+    galleryApriliaNightTitle: 'APRILIA RSV4 / NATË',
+  },
+  en: {
+    metaDescription: 'Spectracustoms — custom motorcycle and car paint, decals and apparel. Prices are agreed directly by phone, WhatsApp or Instagram.',
+    shopDescription: 'Choose decals and details for your own style. Message us directly about availability, production and pricing.',
+    add: 'ADD TO REQUEST',
+    addQuick: 'ADD TO REQUEST',
+    cart: 'Request',
+    cartTitle: 'SELECTED ITEMS',
+    yourSelection: 'YOUR REQUEST',
+    emptyCart: 'You have not selected any items yet.',
+    findStickers: 'BROWSE DECALS',
+    studioUniform: 'SPECTRA COLLECTION / VOL. 01',
+    madeToOrder: '3 STYLES · MADE TO ORDER',
+    quoteDescription: 'Describe your project and choose the details you need. We will discuss the idea and price with you directly.',
+    estimateNote: 'PRICING IS AGREED BASED ON YOUR PROJECT AND REQUIRED MATERIALS.',
+    calculator: 'BUILD YOUR REQUEST',
+    estimatedRange: 'PRICE',
+    priceByAgreement: 'BY AGREEMENT',
+    finalPriceNote: 'Contact us directly for a quote and production timeline.',
+    estimateMessage: 'Hi Spectracustoms! I would like a quote for this project:',
+    requestWhatsApp: 'MESSAGE US ON WHATSAPP',
+    requestInstagram: 'MESSAGE US ON INSTAGRAM',
+    orderWhatsApp: 'SEND REQUEST VIA WHATSAPP',
+    orderMessage: 'Hi Spectracustoms! I would like a quote for:',
+    contactDescription: 'Have an idea for a motorcycle, car, decals or apparel? Call or message us — we will agree on the price and details directly.',
+    spotlightImageAlt: 'Aprilia RSV4 with custom red and black decals',
+    spotlightWhatsAppMessage: 'Hi Spectracustoms! I saw your Aprilia RSV4 project and would like to ask about my own project.',
+    galleryApriliaSideTitle: 'APRILIA RSV4 / FULL BUILD',
+    galleryApriliaDetailTitle: 'DETAILS / RSV4 FACTORY',
+    galleryApriliaNightTitle: 'APRILIA RSV4 / AFTER DARK',
+  },
+}
+
 const products = [
-  { id: 'stage6', brand: 'STAGE6', nameKey: 'productStage6', category: 'performance', price: 10, image: '/images/stickers-stage6.png', tone: 'orange' },
-  { id: 'malossi', brand: 'MALOSSI', nameKey: 'productMalossi', category: 'performance', price: 13, image: '/images/stickers-malossi.png', tone: 'red' },
-  { id: 'polini', brand: 'POLINI', nameKey: 'productPolini', category: 'performance', price: 12, image: '/images/stickers-polini.png', tone: 'blue' },
-  { id: '2fast', brand: '2FAST', nameKey: 'product2fast', category: 'racing', price: 9, image: '/images/stickers-2fast.png', tone: 'lime' },
-  { id: 'doppler', brand: 'DOPPLER', nameKey: 'productDoppler', category: 'performance', price: 10, image: '/images/stickers-doppler.png', tone: 'blue' },
-  { id: 'spectra', brand: 'SPECTRA', nameKey: 'productSpectra', category: 'spectra', price: 16, image: '/images/spectra-custom-decals.jpg', tone: 'lime' },
+  { id: 'stage6', brand: 'STAGE6', nameKey: 'productStage6', category: 'performance', image: '/images/stickers-stage6.png', tone: 'orange' },
+  { id: 'malossi', brand: 'MALOSSI', nameKey: 'productMalossi', category: 'performance', image: '/images/stickers-malossi.png', tone: 'red' },
+  { id: 'polini', brand: 'POLINI', nameKey: 'productPolini', category: 'performance', image: '/images/stickers-polini.png', tone: 'blue' },
+  { id: '2fast', brand: '2FAST', nameKey: 'product2fast', category: 'racing', image: '/images/stickers-2fast.png', tone: 'lime' },
+  { id: 'doppler', brand: 'DOPPLER', nameKey: 'productDoppler', category: 'performance', image: '/images/stickers-doppler.png', tone: 'blue' },
+  { id: 'spectra', brand: 'SPECTRA', nameKey: 'productSpectra', category: 'spectra', image: '/images/spectra-custom-decals.jpg', tone: 'lime' },
 ]
 
 const merch = [
-  { id: 'tee', nameKey: 'merchTee', descriptionKey: 'teeDesc', categoryKey: 'teeCategory', price: 45, image: '/images/spectra-shirt.jpg', tone: 'blue' },
-  { id: 'hoodie', nameKey: 'merchHoodie', descriptionKey: 'hoodieDesc', categoryKey: 'hoodieCategory', price: 79, image: 'photo-1556821840-3a63f95609a7', tone: 'lime' },
-  { id: 'crewneck', nameKey: 'merchCrew', descriptionKey: 'crewDesc', categoryKey: 'crewCategory', price: 65, image: 'photo-1578681994506-b8f463449011', tone: 'violet' },
+  { id: 'tee', brand: 'SPECTRA', nameKey: 'merchTee', descriptionKey: 'teeDesc', categoryKey: 'teeCategory', image: '/images/spectra-shirt.jpg', tone: 'blue' },
+  { id: 'hoodie', brand: 'SPECTRA', nameKey: 'merchHoodie', descriptionKey: 'hoodieDesc', categoryKey: 'hoodieCategory', image: 'photo-1556821840-3a63f95609a7', tone: 'lime' },
+  { id: 'crewneck', brand: 'SPECTRA', nameKey: 'merchCrew', descriptionKey: 'crewDesc', categoryKey: 'crewCategory', image: 'photo-1578681994506-b8f463449011', tone: 'violet' },
 ]
 
 const services = [
@@ -436,6 +529,9 @@ const services = [
 const gallery = [
   { id: 'car', titleKey: 'galleryCarTitle', kind: 'decalJobs', image: '/images/spectra-rally-car.jpg', labelKey: 'decalGallery' },
   { id: 'fairings', titleKey: 'galleryFairingsTitle', kind: 'decalJobs', image: '/images/spectra-fairings.jpg', labelKey: 'decalGallery' },
+  { id: 'aprilia-side', titleKey: 'galleryApriliaSideTitle', kind: 'paintJobs', image: '/images/spectra-aprilia-side.png', labelKey: 'paintGallery' },
+  { id: 'aprilia-detail', titleKey: 'galleryApriliaDetailTitle', kind: 'decalJobs', image: '/images/spectra-aprilia-detail.png', labelKey: 'decalGallery' },
+  { id: 'aprilia-night', titleKey: 'galleryApriliaNightTitle', kind: 'paintJobs', image: '/images/spectra-aprilia-night.png', labelKey: 'paintGallery' },
   { id: 'apparel', titleKey: 'galleryTitle', kind: 'apparelJobs', image: '/images/spectra-shirt.jpg', labelKey: 'apparelGallery' },
   { id: 'stickers', titleKey: 'galleryStickerTitle', kind: 'decalJobs', image: '/images/spectra-custom-decals.jpg', labelKey: 'decalGallery' },
   { id: 'scooter', titleKey: 'galleryScooterTitle', kind: 'paintJobs', image: '/images/spectra-scooter.jpg', labelKey: 'paintGallery' },
@@ -448,12 +544,6 @@ const colorways = [
 const finishes = ['finishGloss', 'finishMatte', 'finishChrome', 'finishHolo', 'finishReflective']
 const placements = ['chest', 'backPrint', 'sleeve']
 const finishKeys = { finishGloss: 'Gloss', finishMatte: 'Matte', finishChrome: 'Chrome', finishHolo: 'Holographic', finishReflective: 'Reflective' }
-const priceText = (amount, currency, lang) => {
-  const eur = `€${amount.toFixed(2)}`
-  const mkd = `${Math.round(amount * MKD_PER_EUR).toLocaleString('mk-MK')} ден.`
-  return currency === 'MKD' ? `${mkd} / ${eur}` : `${eur} / ${mkd}`
-}
-
 function Brand() {
   return <a className="brand" href="#top" aria-label="Spectracustoms"><span className="brand-mark">S<span>.</span></span><span className="brand-type">SPECTRA<span>CUSTOMS</span></span><span className="brand-separator" /></a>
 }
@@ -468,15 +558,12 @@ function ThemeControls({ lang, theme, onTheme, t, compact = false }) {
   </div>
 }
 
-function LocaleControls({ lang, currency, onLanguage, onCurrency, t, compact = false }) {
+function LocaleControls({ lang, onLanguage, t, compact = false }) {
   const nativeLanguageNames = { mk: 'Македонски', sq: 'Shqip', en: 'English' }
-  return <div className={`locale-controls ${compact ? 'locale-compact' : ''}`}>
-    <div className="locale-group" role="group" aria-label={t('language')}><span className="locale-label">{t('language')}</span>{Object.entries(languageNames).map(([code, name]) => <button type="button" key={code} title={nativeLanguageNames[code]} aria-label={nativeLanguageNames[code]} className={lang === code ? 'active' : ''} aria-pressed={lang === code} onClick={() => onLanguage(code)}>{name}</button>)}</div>
-    <div className="locale-group currency-group" role="group" aria-label={t('currency')}><span className="locale-label">{t('currency')}</span>{['EUR', 'MKD'].map(code => <button type="button" key={code} title={code} aria-label={code} className={currency === code ? 'active' : ''} aria-pressed={currency === code} onClick={() => onCurrency(code)}>{code === 'EUR' ? '€' : 'ден.'}</button>)}</div>
-  </div>
+  return <div className={`locale-controls ${compact ? 'locale-compact' : ''}`}><div className="locale-group" role="group" aria-label={t('language')}><span className="locale-label">{t('language')}</span>{Object.entries(languageNames).map(([code, name]) => <button type="button" key={code} title={nativeLanguageNames[code]} aria-label={nativeLanguageNames[code]} className={lang === code ? 'active' : ''} aria-pressed={lang === code} onClick={() => onLanguage(code)}>{name}</button>)}</div></div>
 }
 
-function Header({ cartCount, onCart, lang, currency, theme, onLanguage, onCurrency, onTheme, t }) {
+function Header({ cartCount, onCart, lang, theme, onLanguage, onTheme, t }) {
   const [menuOpen, setMenuOpen] = useState(false)
   const closeMenu = () => setMenuOpen(false)
   const links = [['#top', 'navHome'], ['#services', 'navServices'], ['#shop', 'navShop'], ['#merch', 'navMerch'], ['#work', 'navWork'], ['#community', 'navCommunity'], ['#contact', 'navContact']]
@@ -487,17 +574,17 @@ function Header({ cartCount, onCart, lang, currency, theme, onLanguage, onCurren
     <nav className={`site-nav ${menuOpen ? 'is-open' : ''}`} aria-label={t('navServices')}>
       <div className="mobile-drawer-head"><Brand /><button type="button" className="drawer-close" aria-label={t('closeMenu')} onClick={closeMenu}>×</button></div>
       <div className="drawer-links">{links.map(([href, key]) => <a href={href} key={href} onClick={closeMenu}>{t(key)}</a>)}</div>
-      <LocaleControls lang={lang} currency={currency} onLanguage={onLanguage} onCurrency={onCurrency} t={t} compact />
+      <LocaleControls lang={lang} onLanguage={onLanguage} t={t} compact />
       <ThemeControls lang={lang} theme={theme} onTheme={onTheme} t={t} compact />
       <button className="drawer-cart" type="button" onClick={() => { closeMenu(); onCart() }}><span>{t('cart')}</span><b>{cartCount}</b><span>↗</span></button>
       <a className="drawer-quote" href="#quote" onClick={closeMenu}>{t('quoteCta')} <span>↗</span></a>
     </nav>
-    <div className="header-actions"><LocaleControls lang={lang} currency={currency} onLanguage={onLanguage} onCurrency={onCurrency} t={t} /><ThemeControls lang={lang} theme={theme} onTheme={onTheme} t={t} /><button className="cart-trigger" type="button" onClick={onCart} aria-label={`${t('cart')}, ${cartCount}`}><span className="bag-icon">▱</span><span>{t('cart')}</span><b>{cartCount}</b></button><a className="header-cta" href="#quote">{t('quoteCta')} <span>↗</span></a></div>
+    <div className="header-actions"><LocaleControls lang={lang} onLanguage={onLanguage} t={t} /><ThemeControls lang={lang} theme={theme} onTheme={onTheme} t={t} /><button className="cart-trigger" type="button" onClick={onCart} aria-label={`${t('cart')}, ${cartCount}`}><span className="bag-icon">▱</span><span>{t('cart')}</span><b>{cartCount}</b></button><a className="header-cta" href="#quote">{t('quoteCta')} <span>↗</span></a></div>
   </header>
 }
 
 function Hero({ t }) {
-  return <section className="hero" id="top"><div className="hero-image" style={{ '--hero-image': `url("${imageUrl('/images/spectra-scooter.jpg')}")` }} aria-hidden="true" /><div className="hero-shade" aria-hidden="true" /><div className="hero-content">
+  return <section className="hero" id="top"><div className="hero-image" style={{ '--hero-image': `url("${imageUrl('/images/spectra-aprilia-side.png')}")` }} aria-hidden="true" /><div className="hero-shade" aria-hidden="true" /><div className="hero-content">
     <p className="eyebrow"><span className="live-dot" /> {t('heroEyebrow')} <span className="eyebrow-slash">/</span> EST. 2018</p>
     <h1>{t('heroTitle')}<br /><span>{t('heroTitleAccent')}</span></h1><p className="hero-description">{t('heroDescription')}</p>
     <div className="hero-buttons"><a className="button button-lime" href="#shop">{t('heroShop')} <span>↗</span></a><a className="button button-outline" href="#quote">{t('heroQuote')} <span>↓</span></a></div>
@@ -522,7 +609,7 @@ function ProjectSpotlight({ t }) {
   const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(t('spotlightWhatsAppMessage'))}`
   return <section className="project-spotlight" aria-labelledby="spotlight-title">
     <div className="spotlight-photo">
-      <img src={imageUrl('/images/spectra-rally-car.jpg')} alt={t('spotlightImageAlt')} loading="lazy" />
+      <img src={imageUrl('/images/spectra-aprilia-side.png')} alt={t('spotlightImageAlt')} loading="lazy" />
       <span className="spotlight-photo-label">SPECTRA / BUILD 01</span>
       <span className="spotlight-location"><span className="live-dot" /> KUMANOVO, MK</span>
     </div>
@@ -539,46 +626,46 @@ function ProjectSpotlight({ t }) {
   </section>
 }
 
-function ProductCard({ product, onAdd, t, currency, lang }) {
+function ProductCard({ product, onAdd, t }) {
   const [finish, setFinish] = useState('finishGloss')
   const [size, setSize] = useState('M')
   return <article className="product-card"><div className={`product-visual tone-${product.tone}${product.image ? ' has-product-image' : ' product-brand-art'}`} >{product.image ? <img className="product-image" src={imageUrl(product.image, 'auto=format&fit=crop&w=780&q=80')} alt={`${product.brand} ${t('stickerSet')}`} loading="lazy" /> : <div className="product-brand-mark" aria-hidden="true">{product.brand}</div>}<span className="product-brand">{product.brand}</span>{!product.image && <span className="product-sticker">{product.brand}<small>{t('racingSeries')}</small></span>}<span className="product-visual-index">SC / 0{products.indexOf(product) + 1}</span></div>
-    <div className="product-info"><div className="product-title-row"><div><span className="product-category">{t(product.category)} / {t('stickerSet')}</span><h3>{t(product.nameKey)}</h3></div><strong>{priceText(product.price, currency, lang)}</strong></div>
+    <div className="product-info"><div className="product-title-row"><div><span className="product-category">{t(product.category)} / {t('stickerSet')}</span><h3>{t(product.nameKey)}</h3></div></div>
       <div className="product-options"><label>{t('finish')}<select value={finish} onChange={event => setFinish(event.target.value)} aria-label={`${t('finish')}: ${t(product.nameKey)}`}>{finishes.map(key => <option value={key} key={key}>{t(key)}</option>)}</select></label><label>{t('size')}<select value={size} onChange={event => setSize(event.target.value)} aria-label={`${t('size')}: ${t(product.nameKey)}`}>{['S', 'M', 'L', 'XL', 'XXL'].map(option => <option key={option}>{option}</option>)}</select></label></div>
-      <button className="add-button" type="button" onClick={() => onAdd({ kind: 'sticker', id: product.id, brand: product.brand, price: product.price, tone: product.tone, finishKey: finish, size, key: `${product.id}-${finish}-${size}` })}>{t('add')} <span>＋</span></button>
+      <button className="add-button" type="button" onClick={() => onAdd({ kind: 'sticker', id: product.id, brand: product.brand, tone: product.tone, finishKey: finish, size, key: `${product.id}-${finish}-${size}` }, true)}>{t('add')} <span>＋</span></button>
     </div></article>
 }
 
-function Shop({ onAdd, t, currency, lang }) {
+function Shop({ onAdd, t, lang }) {
   const [search, setSearch] = useState('')
   const [category, setCategory] = useState('all')
   const categories = ['all', 'performance', 'racing', 'spectra']
   const filtered = useMemo(() => products.filter(product => (category === 'all' || product.category === category) && `${product.brand} ${t(product.nameKey)}`.toLowerCase().includes(search.toLowerCase())), [category, search, lang])
   return <section className="section shop-section" id="shop"><div className="section-heading shop-heading"><div><p className="eyebrow section-eyebrow">{t('shopEyebrow')}</p><h2>{t('shopTitle')}<br /><span>{t('shopAccent')}</span></h2></div><p className="section-intro">{t('shopDescription')}</p></div>
     <div className="shop-toolbar"><div className="category-tabs" role="group" aria-label={t('filterProducts')}>{categories.map(key => <button key={key} type="button" className={category === key ? 'active' : ''} onClick={() => setCategory(key)}>{t(key)}<span>{key === 'all' ? products.length : products.filter(product => product.category === key).length}</span></button>)}</div><label className="search-field"><span>⌕</span><input value={search} onChange={event => setSearch(event.target.value)} placeholder={t('search')} aria-label={t('search')} /></label></div>
-    {filtered.length ? <div className="product-grid">{filtered.map(product => <ProductCard key={product.id} product={product} onAdd={onAdd} t={t} currency={currency} lang={lang} />)}</div> : <p className="empty-results">{t('noProducts')}</p>}
+    {filtered.length ? <div className="product-grid">{filtered.map(product => <ProductCard key={product.id} product={product} onAdd={onAdd} t={t} />)}</div> : <p className="empty-results">{t('noProducts')}</p>}
     <div className="shop-footer"><span>{t('showing')} {filtered.length} / {products.length} {t('sets')}</span><a href="#quote" className="text-link">{t('customAsk')} <span>↗</span></a></div></section>
 }
 
-function MerchCard({ product, index, onAdd, t, currency, lang }) {
+function MerchCard({ product, index, onAdd, t }) {
   const [colorway, setColorway] = useState(colorways[0])
   const [size, setSize] = useState('M')
   const [customText, setCustomText] = useState('')
   const [placement, setPlacement] = useState('chest')
   const key = `${product.id}-${colorway.key}-${size}-${placement}-${customText.trim()}`
   return <article className="merch-card"><div className="merch-visual" style={{ '--merch-image': `url("${imageUrl(product.image, 'auto=format&fit=crop&w=900&q=85')}")`, '--garment-color': colorway.value }}><span className="merch-index">SC / GEAR 0{index + 1}</span><div className={`merch-photo${product.image.startsWith('/images/') ? ' merch-photo-authentic' : ''}`} /><div className={`merch-custom-preview placement-${placement}`} style={{ color: colorway.key === 'cyberWhite' ? '#111' : colorway.key === 'neon' ? '#00f0ff' : '#f4f6f7' }}>{customText.trim() || 'SPECTRA'}</div><span className="merch-color-label">{t(colorway.key).toUpperCase()}</span></div>
-    <div className="merch-info"><div className="merch-title-row"><div><span>{t(product.categoryKey)}</span><h3>{t(product.nameKey)}</h3><small>{t(product.descriptionKey)}</small></div><strong>{priceText(product.price, currency, lang)}</strong></div>
+    <div className="merch-info"><div className="merch-title-row"><div><span>{t(product.categoryKey)}</span><h3>{t(product.nameKey)}</h3><small>{t(product.descriptionKey)}</small></div></div>
       <div className="merch-personalize"><label htmlFor={`personalize-${product.id}`}>{t('personalize')}</label><input id={`personalize-${product.id}`} value={customText} onChange={event => setCustomText(event.target.value.slice(0, 14))} placeholder={t('textPlaceholder')} maxLength={14} aria-label={`${t('personalize')}: ${t(product.nameKey)}`} /></div>
       <label className="placement-picker">{t('placement')}<select value={placement} onChange={event => setPlacement(event.target.value)}>{placements.map(key => <option key={key} value={key}>{t(key)}</option>)}</select></label>
       <div className="merch-options"><div className="colorway-picker"><span>{t('color')} / {t(colorway.key).toUpperCase()}</span><div>{colorways.map(option => <button key={option.key} type="button" title={t(option.key)} aria-label={t(option.key)} aria-pressed={colorway.key === option.key} className={colorway.key === option.key ? 'selected' : ''} style={{ '--swatch': option.value }} onClick={() => setColorway(option)} />)}</div></div>
         <label className="merch-size">{t('size')}<select aria-label={`${t(product.nameKey)} — ${t('size')}`} value={size} onChange={event => setSize(event.target.value)}>{['S', 'M', 'L', 'XL', 'XXL'].map(option => <option key={option}>{option}</option>)}</select></label></div>
-      <button className="add-button merch-add" type="button" onClick={() => onAdd({ kind: 'merch', id: product.id, price: product.price, tone: product.tone, colorKey: colorway.key, placement, size, customText: customText.trim(), key })}>{t('addQuick')} <span>＋</span></button>
+      <button className="add-button merch-add" type="button" onClick={() => onAdd({ kind: 'merch', id: product.id, brand: product.brand, tone: product.tone, colorKey: colorway.key, placement, size, customText: customText.trim(), key })}>{t('addQuick')} <span>＋</span></button>
     </div></article>
 }
 
-function MerchSection({ onAdd, t, currency, lang }) {
+function MerchSection({ onAdd, t }) {
   return <section className="section merch-section" id="merch"><div className="section-heading merch-heading"><div><p className="eyebrow section-eyebrow">{t('merchEyebrow')}</p><h2>{t('merchTitle')}<br /><span>{t('merchAccent')}</span></h2></div><p className="section-intro">{t('merchDescription')}</p></div>
-    <div className="merch-meta"><span>{t('studioUniform')}</span><span>{t('madeToOrder')}</span></div><div className="merch-grid">{merch.map((product, index) => <MerchCard key={product.id} product={product} index={index} onAdd={onAdd} t={t} currency={currency} lang={lang} />)}</div>
+    <div className="merch-meta"><span>{t('studioUniform')}</span><span>{t('madeToOrder')}</span></div><div className="merch-grid">{merch.map((product, index) => <MerchCard key={product.id} product={product} index={index} onAdd={onAdd} t={t} />)}</div>
     <div className="merch-endnote"><span>{t('merchEnd1')}</span><span>{t('merchEnd2')} <b>↗</b></span></div></section>
 }
 
@@ -610,7 +697,7 @@ function hexToHue(hex) {
   return Math.round((hue * 60 + 360) % 360)
 }
 
-function QuoteCalculator({ t, currency, lang }) {
+function QuoteCalculator({ t }) {
   const [service, setService] = useState('paint')
   const [vehicle, setVehicle] = useState('motorcycle')
   const [motorType, setMotorType] = useState('scooter')
@@ -652,43 +739,7 @@ function QuoteCalculator({ t, currency, lang }) {
   const vehicleName = vehicle === 'motorcycle'
     ? `${t('motorcycle')} — ${t(motorType)}${motorType === 'otherBike' && otherVehicle ? ` (${otherVehicle})` : ''}`
     : t('car')
-  const stickerSizes = {
-    small: euroPriceFromDenars(500),
-    medium: euroPriceFromDenars(1000),
-    large: euroPriceFromDenars(1800),
-    fullMotor: euroPriceFromDenars(3300),
-  }
   const stickerCount = Math.max(1, Math.min(100, Number(stickerQuantity) || 1))
-  const garmentPrices = { tee: 45, hoodie: 79, crewneck: 65 }
-  let low
-  if (service === 'paint') {
-    const motorcyclePrices = {
-      scooter: euroPriceFromDenars(8500),
-      sportbike: euroPriceFromDenars(14500),
-      largeBike: euroPriceFromDenars(14500),
-      otherBike: euroPriceFromDenars(14500),
-    }
-    low = vehicle === 'car' ? euroPriceFromDenars(35000) : motorcyclePrices[motorType]
-    low += { standardPaint: 0, metallic: euroPriceFromDenars(1500), chameleon: euroPriceFromDenars(3000) }[finish]
-  } else if (service === 'repair') {
-    low = {
-      smallCrack: euroPriceFromDenars(3200),
-      brokenMount: euroPriceFromDenars(4200),
-      scratches: euroPriceFromDenars(3500),
-      multipleDamage: euroPriceFromDenars(6000),
-    }[repairType]
-    if (vehicle === 'car') low = Math.round(low * 1.5)
-  } else if (service === 'decals') {
-    low = (stickerSizes[stickerSize] + {
-      standardVinyl: 0,
-      reflectiveVinyl: euroPriceFromDenars(400),
-      customGraphics: euroPriceFromDenars(600),
-    }[finish]) * stickerCount
-  } else {
-    low = garmentPrices[apparelType] * stickerCount
-  }
-  const high = low + Math.max(10, Math.round(low * .38))
-  const range = `${priceText(low, currency, lang)} — ${priceText(high, currency, lang)}`
   const details = [
     `${t('service')}: ${serviceName}`,
     service === 'paint' || service === 'repair' || service === 'decals' ? `${t('vehicle')}: ${vehicleName}` : '',
@@ -697,10 +748,9 @@ function QuoteCalculator({ t, currency, lang }) {
     service === 'decals' ? `${t('stickerText')}: "${stickerText || t('stickerPlaceholder')}"; ${t('stickerShape')}: ${t(stickerShape)}; ${t('stickerSize')}: ${t(`sticker${stickerSize[0].toUpperCase()}${stickerSize.slice(1)}`)}; ${t('stickerQuantity')}: ${stickerCount}; ${t('stickerFinish')}: ${t(finish)}; #${paintHex.replace('#', '')}${stickerFile ? `; ${stickerFile}` : ''}` : '',
     service === 'apparel' ? `${t('apparelType')}: ${t(apparelType)}; ${t('color')}: ${t(apparelColor)}; ${t('size')}: ${apparelSize}; ${t('placement')}: ${t(apparelPlacement)}; ${apparelText.trim() ? `${t('personalize')}: ${apparelText.trim()}; ` : ''}${t('units')}: ${stickerCount}` : '',
     requestDetails.trim() ? `${t('customRequest')}: ${requestDetails.trim()}` : '',
-    `${t('estimateIs')} ${range}`,
+    t('priceByAgreement'),
   ].filter(Boolean)
   const message = encodeURIComponent(`${t('estimateMessage')}\n${details.join('\n')}`)
-  const email = `mailto:?subject=${encodeURIComponent(t('estimateSubject'))}&body=${message}`
   return <section className="section quote-section" id="quote"><div className="quote-grid"><div className="quote-copy"><p className="eyebrow section-eyebrow">{t('quoteEyebrow')}</p><h2>{t('quoteTitle')}<br /><span>{t('quoteAccent')}</span></h2><p>{t('quoteDescription')}</p><div className="quote-note"><span>↳</span> {t('estimateNote')}</div></div>
     <div className="calculator"><div className="calculator-top"><span>{t('calculator')}</span><span>01 — 04</span></div>
       <label className="calc-label">{t('chooseService')}<select value={service} onChange={event => { const next = event.target.value; setService(next); setFinish(next === 'paint' ? 'standardPaint' : 'standardVinyl'); setStickerOpen(next === 'decals') }}>
@@ -740,7 +790,7 @@ function QuoteCalculator({ t, currency, lang }) {
         <label className="calc-label">{t('units')}<input type="number" min="1" max="100" value={stickerQuantity} onChange={event => setStickerQuantity(Math.max(1, Math.min(100, Number(event.target.value) || 1)))} /></label>
       </>}
       <label className="calc-label">{t('customRequest')}<textarea rows="2" maxLength="500" value={requestDetails} onChange={event => setRequestDetails(event.target.value)} placeholder={t('customPlaceholder')} /></label>
-      <div className="estimate"><span>{t('estimatedRange')}</span><strong>{range}</strong><small>{t('finalPriceNote')}</small></div><a className="button button-lime quote-submit" href={`https://wa.me/${WHATSAPP_NUMBER}?text=${message}`} target="_blank" rel="noreferrer">{t('requestWhatsApp')} <span>↗</span></a><a className="quote-email" href={email}>{t('requestEmail')} ↗</a><p className="quote-includes">{t('quoteIncludes')}</p></div>
+      <div className="estimate"><span>{t('estimatedRange')}</span><strong>{t('priceByAgreement')}</strong><small>{t('finalPriceNote')}</small></div><div className="quote-contact-actions"><a className="button button-lime quote-submit" href={`https://wa.me/${WHATSAPP_NUMBER}?text=${message}`} target="_blank" rel="noreferrer">{t('requestWhatsApp')} <span>↗</span></a><a className="button button-outline quote-instagram" href={INSTAGRAM_MESSAGE_URL} target="_blank" rel="noreferrer">{t('requestInstagram')} <span>↗</span></a></div><p className="quote-includes">{t('quoteIncludes')}</p></div>
   </div></section>
 }
 
@@ -1090,7 +1140,7 @@ function CommunityGallery({ t, lang }) {
   </section>
 }
 
-function Contact({ t, lang }) {
+function Contact({ t }) {
   const [sent, setSent] = useState(false)
   function submit(event) {
     event.preventDefault()
@@ -1101,7 +1151,7 @@ function Contact({ t, lang }) {
     window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${message}`, '_blank', 'noopener,noreferrer')
     setSent(true)
   }
-  return <section className="section contact-section" id="contact"><div className="contact-copy"><p className="eyebrow section-eyebrow">{t('contactEyebrow')}</p><h2>{t('contactTitle')}<br /><span>{t('contactAccent')}</span></h2><p>{t('contactDescription')}</p><div className="contact-direct"><a href={`tel:+${WHATSAPP_NUMBER}`}><span>☎</span> 071 942 295</a><a href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(t('directChat'))}`} target="_blank" rel="noreferrer"><span>↗</span> {t('whatsappUs')}</a><a href="https://instagram.com/spectra.ku" target="_blank" rel="noreferrer"><span>↗</span> @SPECTRA.KU</a></div></div>
+  return <section className="section contact-section" id="contact"><div className="contact-copy"><p className="eyebrow section-eyebrow">{t('contactEyebrow')}</p><h2>{t('contactTitle')}<br /><span>{t('contactAccent')}</span></h2><p>{t('contactDescription')}</p><div className="contact-direct"><a href={`tel:+${WHATSAPP_NUMBER}`}><span>☎</span> +389 71 942 295</a><a href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(t('directChat'))}`} target="_blank" rel="noreferrer"><span>↗</span> {t('whatsappUs')}</a><a href={INSTAGRAM_MESSAGE_URL} target="_blank" rel="noreferrer"><span>↗</span> @SPECTRA.KU</a></div></div>
     <form className="contact-form" onSubmit={submit}><div className="form-row"><label>{t('yourName')}<input name="name" required placeholder={t('namePlaceholder')} /></label><label>{t('phone')}<input name="contact" required placeholder={t('phonePlaceholder')} /></label></div>
       <label>{t('projectType')}<select name="project"><option>{t('projectMotor')}</option><option>{t('projectCar')}</option><option>{t('customStickersOption')}</option><option>{t('projectApparel')}</option><option>{t('serviceRepairOption')}</option><option>{t('projectOther')}</option></select></label>
       <label>{t('details')}<textarea name="details" required rows="4" placeholder={t('detailsPlaceholder')} /></label>
@@ -1117,7 +1167,7 @@ function Footer({ t }) {
     <section className="footer-contact" aria-labelledby="footer-contact-title">
       <div className="footer-contact-info">
         <p className="eyebrow section-eyebrow">{t('footerContactTitle')}</p>
-        <a className="footer-contact-item" href={`tel:+${WHATSAPP_NUMBER}`}><span>☎</span><small>{t('footerPhone')}</small><strong>071 942 295</strong></a>
+        <a className="footer-contact-item" href={`tel:+${WHATSAPP_NUMBER}`}><span>☎</span><small>{t('footerPhone')}</small><strong>+389 71 942 295</strong></a>
         <a className="footer-contact-item" href={mapsUrl} target="_blank" rel="noreferrer"><span>⌖</span><small>{t('footerLocation')}</small><strong>Zenix Zperformance</strong><em>{t('footerCity')}</em></a>
         <a className="footer-map-link" href={mapsUrl} target="_blank" rel="noreferrer">{t('footerMapLink')} ↗</a>
       </div>
@@ -1126,28 +1176,26 @@ function Footer({ t }) {
         <a href={mapsUrl} target="_blank" rel="noreferrer">{t('footerMapLink')} ↗</a>
       </div>
     </section>
-    <div className="footer-main"><Brand /><p>{t('footerText')}<br />{t('footerSub')}</p><a href="#top" className="back-top">{t('backTop')}</a></div><div className="footer-bottom"><span>© {new Date().getFullYear()} SPECTRACUSTOMS. {t('footerMotto')}</span><span>{t('footerServices')}</span><a href="https://instagram.com/spectra.ku" target="_blank" rel="noreferrer">INSTAGRAM ↗</a></div>
+    <div className="footer-main"><Brand /><p>{t('footerText')}<br />{t('footerSub')}</p><a href="#top" className="back-top">{t('backTop')}</a></div><div className="footer-bottom"><span>© {new Date().getFullYear()} SPECTRACUSTOMS. {t('footerMotto')}</span><span>{t('footerServices')}</span><a href={INSTAGRAM_URL} target="_blank" rel="noreferrer">INSTAGRAM ↗</a></div>
   </footer>
 }
 
-function CartDrawer({ cart, onClose, onChange, t, currency, lang }) {
-  const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0)
+function CartDrawer({ cart, onClose, onChange, t }) {
   const orderText = `${t('orderMessage')} ${cart.map(item => {
     const name = item.kind === 'merch' ? t(merch.find(product => product.id === item.id).nameKey) : t(products.find(product => product.id === item.id).nameKey)
     const options = item.kind === 'merch' ? `${t(item.colorKey)}, ${item.size}, ${t(item.placement)}${item.customText ? `, ${t('orderText')} ${item.customText}` : ''}` : `${t(item.finishKey)}, ${item.size}`
-    return `${item.quantity}× ${item.brand} ${name} (${options}) — ${priceText(item.price * item.quantity, currency, lang)}`
-  }).join('; ')}. ${t('subtotal')}: ${priceText(total, currency, lang)}.`
+    return `${item.quantity}× ${item.brand} ${name} (${options})`
+  }).join('; ')}. ${t('priceByAgreement')}.`
   return <div className="drawer-backdrop" onClick={onClose}><aside className="cart-drawer" role="dialog" aria-modal="true" aria-label={t('cart')} onClick={event => event.stopPropagation()}><div className="drawer-head"><div><span className="eyebrow">{t('yourSelection')}</span><h2>{t('cartTitle')} <span>({cart.reduce((sum, item) => sum + item.quantity, 0)})</span></h2></div><button type="button" onClick={onClose} aria-label={t('closeCart')}>×</button></div>
     {cart.length === 0 ? <div className="cart-empty"><span>▱</span><p>{t('emptyCart')}</p><button className="text-link" type="button" onClick={onClose}>{t('findStickers')}</button></div> : <><div className="cart-items">{cart.map(item => {
       const name = item.kind === 'merch' ? t(merch.find(product => product.id === item.id).nameKey) : t(products.find(product => product.id === item.id).nameKey)
       const variation = item.kind === 'merch' ? t(item.colorKey) : t(item.finishKey)
-      return <article className="cart-item" key={item.key}><div className={`cart-thumb tone-${item.tone}`}><span>{item.brand}</span></div><div className="cart-item-info"><span>{item.brand} / {variation} / {item.size}</span><h3>{name}</h3>{item.placement && <small className="cart-personalization">{t(item.placement)}</small>}{item.customText && <small className="cart-personalization">{t('customMark')} {item.customText}</small>}<strong>{priceText(item.price * item.quantity, currency, lang)}</strong><div className="quantity-control"><button type="button" aria-label={`− ${name}`} onClick={() => onChange(item.key, -1)}>−</button><span>{item.quantity}</span><button type="button" aria-label={`+ ${name}`} onClick={() => onChange(item.key, 1)}>＋</button></div></div></article>
-    })}</div><div className="cart-total"><span>{t('total')}</span><strong>{priceText(total, currency, lang)}</strong><small>{t('shipping')}</small><a className="button button-lime" href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(orderText)}`} target="_blank" rel="noreferrer">{t('orderWhatsApp')} ↗</a></div></>}</aside></div>
+      return <article className="cart-item" key={item.key}><div className={`cart-thumb tone-${item.tone}`}><span>{item.brand}</span></div><div className="cart-item-info"><span>{item.brand} / {variation} / {item.size}</span><h3>{name}</h3>{item.placement && <small className="cart-personalization">{t(item.placement)}</small>}{item.customText && <small className="cart-personalization">{t('customMark')} {item.customText}</small>}<div className="quantity-control"><button type="button" aria-label={`− ${name}`} onClick={() => onChange(item.key, -1)}>−</button><span>{item.quantity}</span><button type="button" aria-label={`+ ${name}`} onClick={() => onChange(item.key, 1)}>＋</button></div></div></article>
+    })}</div><div className="cart-total"><span>{t('priceByAgreement')}</span><small>{t('finalPriceNote')}</small><a className="button button-lime" href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(orderText)}`} target="_blank" rel="noreferrer">{t('orderWhatsApp')} ↗</a><a className="button button-outline" href={INSTAGRAM_MESSAGE_URL} target="_blank" rel="noreferrer">{t('requestInstagram')} ↗</a></div></>}</aside></div>
 }
 
 export default function App() {
   const [lang, setLang] = useState('mk')
-  const [currency, setCurrency] = useState('EUR')
   const [theme, setTheme] = useState(() => {
     const storedTheme = window.localStorage?.getItem('spectra-theme')
     return themes.some(option => option.id === storedTheme) ? storedTheme : 'cyan'
@@ -1155,7 +1203,7 @@ export default function App() {
   const [cart, setCart] = useState([])
   const [cartOpen, setCartOpen] = useState(false)
   const [stickyCtaSuppressed, setStickyCtaSuppressed] = useState(false)
-  const t = key => translations[lang][key] ?? configuratorCopy[lang]?.[key] ?? themeTranslations[lang]?.[key] ?? communityTranslations[lang]?.[key] ?? translations.en[key] ?? configuratorCopy.en[key] ?? themeTranslations.en[key] ?? communityTranslations.en[key] ?? key
+  const t = key => salesCopy[lang]?.[key] ?? translations[lang][key] ?? configuratorCopy[lang]?.[key] ?? themeTranslations[lang]?.[key] ?? communityTranslations[lang]?.[key] ?? salesCopy.en[key] ?? translations.en[key] ?? configuratorCopy.en[key] ?? themeTranslations.en[key] ?? communityTranslations.en[key] ?? key
   useEffect(() => {
     document.documentElement.lang = lang
     document.title = t('documentTitle')
@@ -1188,6 +1236,6 @@ export default function App() {
   function changeQuantity(key, delta) {
     setCart(current => current.map(item => item.key === key ? { ...item, quantity: item.quantity + delta } : item).filter(item => item.quantity > 0))
   }
-  const localeProps = { lang, currency, t }
-  return <div className="page"><Header cartCount={count} onCart={() => setCartOpen(true)} onLanguage={setLang} onCurrency={setCurrency} theme={theme} onTheme={setTheme} {...localeProps} /><main><Hero t={t} /><IntroStrip t={t} /><Services t={t} /><TrustSection t={t} /><ProjectSpotlight t={t} /><Shop onAdd={addToCart} {...localeProps} /><MerchSection onAdd={product => addToCart(product, true)} {...localeProps} /><QuoteCalculator {...localeProps} /><Portfolio t={t} /><CommunityGallery t={t} lang={lang} /><Contact t={t} lang={lang} /></main><Footer t={t} /><a className={`mobile-sticky-quote${stickyCtaSuppressed ? ' is-hidden' : ''}`} href="#quote" aria-hidden={stickyCtaSuppressed} tabIndex={stickyCtaSuppressed ? -1 : 0}>{t('quoteCta')} <span>↗</span></a>{cartOpen && <CartDrawer cart={cart} onClose={() => setCartOpen(false)} onChange={changeQuantity} {...localeProps} />}</div>
+  const localeProps = { lang, t }
+  return <div className="page"><Header cartCount={count} onCart={() => setCartOpen(true)} onLanguage={setLang} theme={theme} onTheme={setTheme} {...localeProps} /><main><Hero t={t} /><IntroStrip t={t} /><Services t={t} /><TrustSection t={t} /><ProjectSpotlight t={t} /><Shop onAdd={addToCart} {...localeProps} /><MerchSection onAdd={product => addToCart(product, true)} {...localeProps} /><QuoteCalculator {...localeProps} /><Portfolio t={t} /><CommunityGallery t={t} lang={lang} /><Contact t={t} /></main><Footer t={t} /><a className={`mobile-sticky-quote${stickyCtaSuppressed ? ' is-hidden' : ''}`} href="#quote" aria-hidden={stickyCtaSuppressed} tabIndex={stickyCtaSuppressed ? -1 : 0}>{t('quoteCta')} <span>↗</span></a>{cartOpen && <CartDrawer cart={cart} onClose={() => setCartOpen(false)} onChange={changeQuantity} {...localeProps} />}</div>
 }

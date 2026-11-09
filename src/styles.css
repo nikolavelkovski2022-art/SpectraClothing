@@ -736,7 +736,14 @@ body{font-size:15px;line-height:1.7}
 }
 @media(max-width:700px){
   .project-spotlight{grid-template-columns:1fr;gap:30px;padding:66px 7%}
-  .spotlight-photo{height:clamp(330px,95vw,500px)}
+  .spotlight-photo{height:clamp(330px,95vw,500px)  }
+
+  .quote-contact-actions{display:grid;gap:10px;margin-top:8px}
+  .quote-contact-actions .button{width:100%;margin:0}
+  .cart-total{grid-template-columns:1fr}
+  .cart-total>span,.cart-total>small,.cart-total .button{grid-column:1}
+  .cart-total>span{font:10px var(--mono);letter-spacing:.08em;color:var(--accent)}
+  .cart-total>small{color:#a1a1aa}
   .spotlight-photo-label,.spotlight-location{left:14px}
   .spotlight-photo-label{top:14px}
   .spotlight-location{bottom:15px}

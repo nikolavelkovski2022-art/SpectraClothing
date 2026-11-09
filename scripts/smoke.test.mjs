@@ -81,7 +81,7 @@ const checks = [
   ['brand wordmark', /SPECTRA/],
   ['Macedonian hero headline', /ТВОЈАТА МАШИНА/],
   ['Macedonian hero CTA', /Истражи ги налепниците/],
-  ['dual currency display', /ден\./],
+  ['prices are not shown on the page', /^(?![\s\S]*(?:€\s?\d|\$\s?\d|\d[\d.,]*\s?(?:ден\.|MKD)))[\s\S]*$/],
   ['painting service', /Фарбање мотори и коли/],
   ['custom decals service', /Персонализирани декали/],
   ['tuning brand product', /STAGE6/],
@@ -105,18 +105,18 @@ const checks = [
   ['merch size range', /XXL/],
   ['personalization preview input', /ТВОЈ ТЕКСТ \/ ПРЕКАР/],
   ['print placement selector', /ПОЗИЦИЈА НА ПЕЧАТОТ/],
-  ['quote estimator', /КАЛКУЛАТОР ЗА ЦЕНА/],
+  ['quote builder', /ПОДГОТВИ БАРАЊЕ/],
   ['quote service choice', /Персонализирани декали/],
   ['plastic repair service', /Поправка на пластики/],
   ['four selectable quote services', /Изработка на маици/],
-  ['email quote option', /ИСПРАТИ ГО БАРАЊЕТО ПО Е-ПОШТА/],
+  ['WhatsApp and Instagram quote actions', /ПИШИ НИ НА WHATSAPP[\s\S]*ПИШИ НИ НА INSTAGRAM/],
   ['studio trust element', /ОД ИДЕЈА ДО ФИНАЛНА ИЗРАБОТКА/],
   ['WhatsApp direct contact', /ПИШИ НИ ДИРЕКТНО/],
   ['theme color selector', /THEME COLOR|БОЈА НА ТЕМАТА/],
   ['four relaxing accent themes', /Лилакова.*Светло сина.*Нане.*Тиркизна/],
   ['navigation links to the riders community section', /href="#community">Заедница/],
   ['featured project marketing copy', /ТВОЈОТ СТИЛ\.[\s\S]*ТВОЈ ПОТПИС\./],
-  ['featured project uses real Spectra car photo', /spotlight-photo[\s\S]*spectra-rally-car\.jpg/],
+  ['featured project uses the supplied Aprilia photo', /spotlight-photo[\s\S]*spectra-aprilia-side\.png/],
   ['featured project links directly to WhatsApp', /spotlight-actions[\s\S]*wa\.me\/38971942295\?text=/],
   ['fan community gallery renders with a studio section', /НАШИТЕ ВОЗАЧИ\.[\s\S]*Supabase податоците за поврзување/],
   ['community gallery reports missing backend setup', /Supabase податоците за поврзување/],
@@ -124,13 +124,13 @@ const checks = [
   ['real vehicle, fairing, and custom decal portfolio images', /spectra-rally-car\.jpg[\s\S]*spectra-fairings\.jpg[\s\S]*spectra-custom-decals\.jpg/],
   ['portfolio project image set', /Spectra Rally \/ Corsa|spectra-rally-car\.jpg/],
   ['contact form', /ТЕЛЕФОН \/ WHATSAPP/],
-  ['phone number at contact and page end', /071 942 295/],
+  ['phone number at contact and page end', /\+389 71 942 295/],
   ['phone and WhatsApp connect to supplied number', /tel:\+38971942295|wa\.me\/38971942295/],
   ['Google Maps location for Zenix Zperformance', /Zenix Zperformance — Google Maps/],
   ['embedded Google Maps and directions link', /maps\.google\.com\/maps\?q=Zenix%20Zperformance%20Kumanovo&amp;output=embed|maps\.google\.com\/maps\?q=Zenix%20Zperformance%20Kumanovo&output=embed/],
   ['reference photo upload', /type="file"/],
   ['Instagram contact', /SPECTRA\.KU/],
-  ['locally hosted Spectra project and apparel photos', /\/images\/spectra-(?:scooter|shirt|workshop)\.jpg/],
+  ['locally hosted Spectra project and apparel photos', /\/images\/spectra-(?:aprilia-side\.png|scooter|shirt|workshop)\.jpg/],
   ['footer', /SPECTRACUSTOMS\. СОЗДАДЕНО ЗА ПАТ/],
 ]
 
@@ -183,9 +183,12 @@ for (const image of [
   } else console.log(`PASS  product card loads ${image}`)
 }
 
-if (container.querySelectorAll('.gallery-card').length !== 5) {
-  failed.push('five real project photos render in the portfolio')
-} else console.log('PASS  five real project photos render in the portfolio')
+if (container.querySelectorAll('.gallery-card').length !== 8 ||
+    !container.innerHTML.includes('spectra-aprilia-side.png') ||
+    !container.innerHTML.includes('spectra-aprilia-detail.png') ||
+    !container.innerHTML.includes('spectra-aprilia-night.png')) {
+  failed.push('the portfolio renders the five existing and three supplied photos')
+} else console.log('PASS  the portfolio renders the five existing and three supplied photos')
 
 if (failed.length) {
   console.error('\nFAILED:', failed.join(' | '))
@@ -203,16 +206,16 @@ await selectValue(serviceSelect, 'decals')
 if (!container.querySelector('.sticker-designer') || !container.querySelector('.sticker-live-preview')) {
   failed.push('custom sticker designer opens for decal service')
 } else console.log('PASS  custom sticker designer opens for decal service')
-if (!container.querySelector('.estimate strong')?.textContent.includes('3.300 ден.') ||
+if (!container.querySelector('.estimate strong')?.textContent.includes('ПО ДОГОВОР') ||
     !container.querySelector('.designer-body select option[value="fullMotor"]')?.textContent.includes('цел мотор')) {
-  failed.push('full motorcycle sticker kit is estimated at 3,300 MKD')
-} else console.log('PASS  full motorcycle sticker kit is estimated at 3,300 MKD')
+  failed.push('full motorcycle sticker kit offers a quote without showing a price')
+} else console.log('PASS  full motorcycle sticker kit offers a quote without showing a price')
 const decalVehicleSelect = container.querySelectorAll('.calculator .calc-label select')[1]
 await selectValue(decalVehicleSelect, 'car')
 if (container.querySelector('.designer-body select option[value="fullMotor"]') ||
-    !container.querySelector('.estimate strong')?.textContent.includes('1.800 ден.')) {
-  failed.push('car decal selection switches away from motorcycle sticker kit pricing')
-} else console.log('PASS  car decal selection switches away from motorcycle sticker kit pricing')
+    !container.querySelector('.estimate strong')?.textContent.includes('ПО ДОГОВОР')) {
+  failed.push('car decal selection keeps the agreed-price message')
+} else console.log('PASS  car decal selection keeps the agreed-price message')
 await selectValue(decalVehicleSelect, 'motorcycle')
 const decalSizeSelect = container.querySelectorAll('.designer-body .designer-controls select')[1]
 await selectValue(decalSizeSelect, 'fullMotor')
@@ -231,17 +234,14 @@ container.querySelector('.designer-toggle')?.click()
 
 await selectValue(serviceSelect, 'paint')
 const scooterEstimate = container.querySelector('.estimate strong')?.textContent
-if (!scooterEstimate?.includes('8.500 ден.')) {
-  failed.push('scooter paint estimate starts at 8,500 MKD')
-} else console.log('PASS  scooter paint estimate starts at 8,500 MKD')
+if (!scooterEstimate?.includes('ПО ДОГОВОР')) {
+  failed.push('scooter paint shows price by agreement')
+} else console.log('PASS  scooter paint shows price by agreement')
 const paintSelects = container.querySelectorAll('.calculator .calc-label select')
 await selectValue(paintSelects[2], 'sportbike')
-if (scooterEstimate === container.querySelector('.estimate strong')?.textContent) {
-  failed.push('motorcycle type updates painting estimate')
-} else console.log('PASS  motorcycle type updates painting estimate')
-if (!container.querySelector('.estimate strong')?.textContent.includes('14.500 ден.')) {
-  failed.push('other motorcycle paint estimate starts at 14,500 MKD')
-} else console.log('PASS  other motorcycle paint estimate starts at 14,500 MKD')
+if (scooterEstimate !== container.querySelector('.estimate strong')?.textContent) {
+  failed.push('motorcycle type changes do not reveal a price')
+} else console.log('PASS  motorcycle type changes do not reveal a price')
 if (container.querySelectorAll('.paint-swatches button').length < 7 || !container.querySelector('.spectrum-control input[type="range"]')) {
   failed.push('paint color catalog and spectrum controls render')
 } else console.log('PASS  paint color catalog and spectrum controls render')
@@ -250,9 +250,9 @@ await selectValue(serviceSelect, 'repair')
 if (!container.textContent.includes('Скршен држач / носач')) {
   failed.push('plastic repair service exposes damage options')
 } else console.log('PASS  plastic repair service exposes damage options')
-if (!container.querySelector('.estimate strong')?.textContent.includes('3.200 ден.')) {
-  failed.push('plastic repair with painting starts at 3,200 MKD')
-} else console.log('PASS  plastic repair with painting starts at 3,200 MKD')
+if (!container.querySelector('.estimate strong')?.textContent.includes('ПО ДОГОВОР')) {
+  failed.push('plastic repair displays the agreed-price message')
+} else console.log('PASS  plastic repair displays the agreed-price message')
 
 await selectValue(serviceSelect, 'apparel')
 if (!container.textContent.includes('Премиум маица') || !container.textContent.includes('КОЛИЧИНА') ||
@@ -263,7 +263,6 @@ if (!container.textContent.includes('Премиум маица') || !container.t
 await selectValue(serviceSelect, 'paint')
 
 const languageButtons = container.querySelectorAll('.header-actions .locale-group:first-child button')
-const currencyButtons = container.querySelectorAll('.header-actions .currency-group button')
 const themeButtons = container.querySelectorAll('.header-actions .theme-controls button')
 if (themeButtons.length !== 4 || !themeButtons[3].getAttribute('aria-pressed') || document.documentElement.dataset.theme !== 'cyan') {
   failed.push('theme selector renders four options with the default cyan theme selected')
@@ -292,7 +291,7 @@ if (!englishContent.includes('YOUR SIGNATURE.') || !englishContent.includes('TAL
     !container.querySelector('.spotlight-actions a[href^="https://wa.me/38971942295?text="]')) {
   failed.push('featured project marketing section translates and retains WhatsApp action in English')
 } else console.log('PASS  featured project marketing section translates to English')
-if (!englishContent.includes('MOTORCYCLE & CAR PAINTING') || !englishContent.includes('PREMIUM HEAVYWEIGHT TEE') || !englishContent.includes('PRICE ESTIMATOR') || !englishContent.includes('PROJECT DETAILS') || !englishContent.includes('PLASTIC REPAIR') || !englishContent.includes('COLOR SPECTRUM')) {
+if (!englishContent.includes('MOTORCYCLE & CAR PAINTING') || !englishContent.includes('PREMIUM HEAVYWEIGHT TEE') || !englishContent.includes('BUILD YOUR REQUEST') || !englishContent.includes('PROJECT DETAILS') || !englishContent.includes('PLASTIC REPAIR') || !englishContent.includes('COLOR SPECTRUM') || !englishContent.includes('BY AGREEMENT')) {
   failed.push('English translations cover service configurator and contact')
 } else console.log('PASS  English translations cover service configurator and contact')
 
@@ -306,17 +305,15 @@ if (!albanianContent.includes('NËNSHKRIMI YT.') || !albanianContent.includes('F
     !container.querySelector('.spotlight-actions a[href^="https://wa.me/38971942295?text="]')) {
   failed.push('featured project marketing section translates and retains WhatsApp action in Albanian')
 } else console.log('PASS  featured project marketing section translates to Albanian')
-if (!albanianContent.includes('LYERJE MOTOÇIKLETASH DHE MAKINASH') || !albanianContent.includes('LLOGARITËSI I ÇMIMIT') || !albanianContent.includes('DETAJET E PROJEKTIT') || !albanianContent.includes('RIPARIM I PLASTIKËS') || !albanianContent.includes('SPEKTRI I NGJYRAVE')) {
+if (!albanianContent.includes('LYERJE MOTOÇIKLETASH DHE MAKINASH') || !albanianContent.includes('PËRGATIT KËRKESËN') || !albanianContent.includes('DETAJET E PROJEKTIT') || !albanianContent.includes('RIPARIM I PLASTIKËS') || !albanianContent.includes('SPEKTRI I NGJYRAVE') || !albanianContent.includes('ME MARRËVESHJE')) {
   failed.push('Albanian translations cover service configurator and contact')
 } else console.log('PASS  Albanian translations cover service configurator and contact')
 
 languageButtons[0].click()
-currencyButtons[1].click()
 await new Promise((r) => setTimeout(r, 30))
-const firstMerchPrice = container.querySelector('.merch-title-row strong')?.textContent ?? ''
-if (document.documentElement.lang !== 'mk' || !firstMerchPrice.includes('ден.') || !firstMerchPrice.startsWith('2')) {
-  failed.push('Macedonian and MKD display preference')
-} else console.log('PASS  Macedonian and MKD display preference')
+if (document.documentElement.lang !== 'mk' || container.querySelector('.merch-title-row strong')) {
+  failed.push('Macedonian display preference and no merch prices')
+} else console.log('PASS  Macedonian display preference and no merch prices')
 
 if (!container.querySelector('.mobile-menu-scrim') && container.querySelector('.drawer-links') && container.querySelector('.site-nav .locale-controls')) {
   console.log('PASS  mobile drawer includes localized navigation and locale controls')
@@ -331,11 +328,9 @@ const cartItemAfterLanguageChange = container.querySelector('.cart-item h3')?.te
 if (cartItemBeforeLanguageChange !== 'Премиум маица' || cartItemAfterLanguageChange !== 'Premium heavyweight tee') {
   failed.push('cart contents update with selected language')
 } else console.log('PASS  cart contents update with selected language')
-currencyButtons[0].click()
-await new Promise((r) => setTimeout(r, 30))
-if (!container.querySelector('.cart-total strong')?.textContent.startsWith('€')) {
-  failed.push('currency switch updates cart preferred price order')
-} else console.log('PASS  currency switch updates cart preferred price order')
+if (container.querySelector('.cart-item-info>strong') || container.querySelector('.cart-total strong')) {
+  failed.push('cart selection contains no price totals')
+} else console.log('PASS  cart selection contains no price totals')
 
 if (failed.length) {
   console.error('\nFAILED:', failed.join(' | '))
