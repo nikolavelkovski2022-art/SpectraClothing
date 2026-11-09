@@ -754,3 +754,24 @@ body{font-size:15px;line-height:1.7}
   .spotlight-actions .button{width:100%}
   .spotlight-secondary{padding:8px 0}
 }
+
+html[lang="mk"] .hero h1{font-size:clamp(54px,7.8vw,118px)}
+html[lang="mk"] .section-heading h2,
+html[lang="mk"] .quote-copy h2,
+html[lang="mk"] .contact-copy h2{font-size:clamp(52px,6.65vw,84px)}
+html[lang="mk"] .spotlight-copy h2{font-size:clamp(43px,4.45vw,66px)}
+html[lang="mk"] .service-card h3{font-size:24px}
+@media(max-width:700px){
+  html[lang="mk"] .hero h1{font-size:clamp(42px,9.5vw,63px)}
+  html[lang="mk"] .section-heading h2,
+  html[lang="mk"] .quote-copy h2,
+  html[lang="mk"] .contact-copy h2{font-size:clamp(43px,10.45vw,65px)}
+  html[lang="mk"] .spotlight-copy h2{font-size:clamp(40px,10.45vw,53px)}
+  html[lang="mk"] .service-card h3{font-size:24px}
+}
+@media(max-width:390px){
+  html[lang="mk"] .hero h1{font-size:clamp(41px,10.45vw,49px)}
+  html[lang="mk"] .section-heading h2,
+  html[lang="mk"] .quote-copy h2,
+  html[lang="mk"] .contact-copy h2{font-size:clamp(42px,10.45vw,49px)}
+}
